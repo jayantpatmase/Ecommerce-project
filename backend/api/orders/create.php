@@ -26,9 +26,15 @@ if (!empty($errors)) {
 $shippingAddress = Validator::sanitize($data['shipping_address']);
 $paymentMethod   = Validator::sanitize($data['payment_method']);
 
-$allowedMethods = ['Cash on Delivery', 'Online Payment'];
+$allowedMethods = [
+    'Cash on Delivery',
+    'Online Payment',
+    'UPI (Google Pay / PhonePe / Paytm / BHIM)',
+    'Credit/Debit Card (RuPay/Visa/Mastercard)',
+    'Net Banking'
+];
 if (!in_array($paymentMethod, $allowedMethods, true)) {
-    Response::error('Invalid payment method selected.', ['payment_method' => 'Allowed: Cash on Delivery or Online Payment'], 400);
+    Response::error('Invalid payment method selected.', ['payment_method' => 'Allowed: Cash on Delivery, UPI, Cards, Net Banking, or Online Payment'], 400);
 }
 
 $db = Database::getConnection();
@@ -93,8 +99,8 @@ try {
         ];
     }
 
-    // Shipping fee rule: orders >= $150 have free shipping, otherwise $15 flat
-    $shippingFee = ($subtotal >= 150.00) ? 0.00 : 15.00;
+    // Shipping fee rule: Free delivery for orders >= ₹999, otherwise ₹49 flat
+    $shippingFee = ($subtotal >= 999.00) ? 0.00 : 49.00;
     $grandTotal  = round($subtotal + $shippingFee, 2);
 
     $paymentStatus = 'pending';

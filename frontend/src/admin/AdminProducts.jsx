@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
+import { formatPrice } from '../utils/format';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -135,7 +136,7 @@ export default function AdminProducts() {
                       </div>
                     </td>
                     <td>{p.category_name}</td>
-                    <td className="text-muted">${Number(p.price).toFixed(2)}</td>
+                    <td className="text-muted">{formatPrice(p.price)}</td>
                     <td>
                       {p.discount > 0 ? (
                         <span className="badge bg-danger-subtle text-danger">-{Number(p.discount)}%</span>
@@ -143,7 +144,7 @@ export default function AdminProducts() {
                         <span className="text-muted">None</span>
                       )}
                     </td>
-                    <td className="fw-bold text-primary">${Number(p.final_price).toFixed(2)}</td>
+                    <td className="fw-bold text-primary">{formatPrice(p.final_price)}</td>
                     <td>
                       <span className={`badge ${p.stock <= 0 ? 'bg-danger' : p.stock <= 5 ? 'bg-warning text-dark' : 'bg-success-subtle text-success'}`}>
                         {p.stock} units

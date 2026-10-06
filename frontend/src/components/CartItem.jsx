@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { formatPrice } from '../utils/format';
 
 export default function CartItem({ item, onQuantityChange, onRemove, updating = false }) {
   const isOutOfStock = !item.is_available;
@@ -30,9 +31,9 @@ export default function CartItem({ item, onQuantityChange, onRemove, updating = 
             </Link>
           </h6>
           <div className="small text-muted">
-            Unit Price: <span className="fw-semibold text-dark">${Number(item.final_price).toFixed(2)}</span>
+            Unit Price: <span className="fw-semibold text-dark">{formatPrice(item.final_price)}</span>
             {item.discount > 0 && (
-              <span className="text-decoration-line-through ms-2">${Number(item.price).toFixed(2)}</span>
+              <span className="text-decoration-line-through ms-2">{formatPrice(item.price)}</span>
             )}
           </div>
           {isOutOfStock && (
@@ -73,7 +74,7 @@ export default function CartItem({ item, onQuantityChange, onRemove, updating = 
         {/* Total & Remove */}
         <div className="col-6 col-sm-3 text-end d-flex flex-column align-items-end justify-content-center">
           <div className="fs-6 fw-bold text-dark mb-1">
-            ${Number(item.item_total).toFixed(2)}
+            {formatPrice(item.item_total)}
           </div>
           <button
             className="btn btn-sm btn-link text-danger text-decoration-none p-0 d-flex align-items-center gap-1"

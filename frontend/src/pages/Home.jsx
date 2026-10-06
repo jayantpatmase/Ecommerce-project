@@ -77,7 +77,8 @@ export default function Home() {
                 <div className="position-absolute bottom-0 start-0 m-4 p-3 bg-white text-dark rounded-3 shadow text-start d-none d-sm-block">
                   <div className="badge bg-danger mb-1">-15% OFF</div>
                   <h6 className="fw-bold mb-0">Wireless ANC Pro Headphones</h6>
-                  <span className="text-primary fw-extrabold fs-5">$169.99</span>
+                  <span className="text-primary fw-extrabold fs-5">₹2,124</span>
+                  <span className="text-muted text-decoration-line-through small ms-2">₹2,499</span>
                 </div>
               </div>
             </div>
@@ -149,7 +150,7 @@ export default function Home() {
             <div className="col-lg-8">
               <span className="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill mb-2">LIMITED TIME PROMOTION</span>
               <h2 className="display-6 fw-bold mb-2">Save Up to 20% on Tech &amp; Home Essentials</h2>
-              <p className="mb-0 text-white-50">Hand-picked premium selections with verified discounts. Order today and get free delivery on all orders over $150.</p>
+              <p className="mb-0 text-white-50">Hand-picked premium selections with verified discounts. Order today and get free delivery on all orders over ₹999.</p>
             </div>
             <div className="col-lg-4 text-lg-end">
               <Link to="/products?discount=10" className="btn btn-light btn-lg text-primary fw-bold px-4 shadow">
@@ -211,7 +212,7 @@ export default function Home() {
         <div className="container">
           <div className="text-center mb-5">
             <span className="text-primary text-uppercase fw-bold small">Customer First</span>
-            <h3 className="fw-bold text-dark">Why Shop With E-Shop?</h3>
+            <h3 className="fw-bold text-dark">Why Shop With E-Shop India?</h3>
           </div>
 
           <div className="row g-4 text-center">
@@ -220,8 +221,8 @@ export default function Home() {
                 <div className="stat-icon bg-primary-subtle text-primary mx-auto mb-3">
                   <i className="bi bi-truck fs-3"></i>
                 </div>
-                <h6 className="fw-bold text-dark">Free Shipping</h6>
-                <p className="text-muted small mb-0">Free expedited shipping on orders over $150.</p>
+                <h6 className="fw-bold text-dark">Free Delivery</h6>
+                <p className="text-muted small mb-0">Free shipping on orders over ₹999 across India.</p>
               </div>
             </div>
 
@@ -230,8 +231,8 @@ export default function Home() {
                 <div className="stat-icon bg-success-subtle text-success mx-auto mb-3">
                   <i className="bi bi-shield-check fs-3"></i>
                 </div>
-                <h6 className="fw-bold text-dark">Secure Payments</h6>
-                <p className="text-muted small mb-0">100% verified transactions &amp; Cash on Delivery.</p>
+                <h6 className="fw-bold text-dark">UPI &amp; RuPay Ready</h6>
+                <p className="text-muted small mb-0">Google Pay, PhonePe, Paytm, RuPay &amp; COD.</p>
               </div>
             </div>
 
@@ -240,8 +241,8 @@ export default function Home() {
                 <div className="stat-icon bg-warning-subtle text-warning mx-auto mb-3">
                   <i className="bi bi-arrow-counterclockwise fs-3"></i>
                 </div>
-                <h6 className="fw-bold text-dark">30-Day Returns</h6>
-                <p className="text-muted small mb-0">Hassle-free replacement or refund policy.</p>
+                <h6 className="fw-bold text-dark">7-Day Easy Returns</h6>
+                <p className="text-muted small mb-0">Instant replacement or hassle-free refunds.</p>
               </div>
             </div>
 
@@ -250,8 +251,8 @@ export default function Home() {
                 <div className="stat-icon bg-info-subtle text-info mx-auto mb-3">
                   <i className="bi bi-headset fs-3"></i>
                 </div>
-                <h6 className="fw-bold text-dark">24/7 Support</h6>
-                <p className="text-muted small mb-0">Dedicated team ready to assist via email and chat.</p>
+                <h6 className="fw-bold text-dark">All-India Support</h6>
+                <p className="text-muted small mb-0">Toll-free 1800-123-4567 &amp; support@eshop.in.</p>
               </div>
             </div>
           </div>

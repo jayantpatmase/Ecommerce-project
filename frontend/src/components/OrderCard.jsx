@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import OrderStatusBadge from './OrderStatusBadge';
+import { formatPrice } from '../utils/format';
 
 export default function OrderCard({ order }) {
-  const formattedDate = new Date(order.created_at).toLocaleDateString('en-US', {
+  const formattedDate = new Date(order.created_at).toLocaleDateString('en-IN', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
@@ -32,7 +33,7 @@ export default function OrderCard({ order }) {
         <div>
           <div className="small text-muted mb-1">Total Amount</div>
           <div className="fs-5 fw-bold text-primary">
-            ${Number(order.total_amount).toFixed(2)}
+            {formatPrice(order.total_amount)}
           </div>
         </div>
 

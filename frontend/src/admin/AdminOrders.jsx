@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import OrderStatusBadge from '../components/OrderStatusBadge';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
+import { formatPrice } from '../utils/format';
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -136,7 +137,7 @@ export default function AdminOrders() {
                         {ord.item_count} items
                       </span>
                     </td>
-                    <td className="fw-bold text-primary">${Number(ord.total_amount).toFixed(2)}</td>
+                    <td className="fw-bold text-primary">{formatPrice(ord.total_amount)}</td>
                     <td className="text-muted">{ord.payment_method}</td>
                     <td>
                       <OrderStatusBadge status={ord.payment_status} />

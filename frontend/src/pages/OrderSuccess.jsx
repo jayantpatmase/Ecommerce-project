@@ -3,6 +3,7 @@ import { useSearchParams, Link, useLocation } from 'react-router-dom';
 import { api } from '../services/api';
 import OrderStatusBadge from '../components/OrderStatusBadge';
 import Loading from '../components/Loading';
+import { formatPrice } from '../utils/format';
 
 export default function OrderSuccess() {
   const [searchParams] = useSearchParams();
@@ -109,7 +110,7 @@ export default function OrderSuccess() {
 
                   <div className="col-sm-6">
                     <span className="text-muted small d-block">Total Amount</span>
-                    <strong className="fs-5 text-primary">${Number(order.total_amount).toFixed(2)}</strong>
+                    <strong className="fs-5 text-primary">{formatPrice(order.total_amount)}</strong>
                   </div>
 
                   <div className="col-sm-6">
@@ -137,7 +138,7 @@ export default function OrderSuccess() {
                     <h5 className="fw-bold text-dark mb-0">Online Payment Required</h5>
                   </div>
                   <p className="small text-muted mb-3">
-                    Your order total is <strong>${Number(order.total_amount).toFixed(2)}</strong>. Complete your payment using our secure gateway simulation to immediately confirm this order.
+                    Your order total is <strong>{formatPrice(order.total_amount)}</strong>. Complete your payment using our secure gateway simulation to immediately confirm this order.
                   </p>
 
                   {payError && (
@@ -158,7 +159,7 @@ export default function OrderSuccess() {
                       onClick={() => handleSimulatedPayment(false)}
                       disabled={paying}
                     >
-                      {paying ? 'Verifying with Gateway...' : `Pay Online Now ($${Number(order.total_amount).toFixed(2)})`}
+                      {paying ? 'Verifying with Gateway...' : `Pay Online Now (${formatPrice(order.total_amount)})`}
                     </button>
 
                     <button

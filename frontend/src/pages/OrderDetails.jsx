@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import OrderStatusBadge from '../components/OrderStatusBadge';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
+import { formatPrice } from '../utils/format';
 
 export default function OrderDetails() {
   const { id } = useParams();
@@ -160,7 +161,7 @@ export default function OrderDetails() {
             <div className="col-md-4">
               <strong className="d-block text-secondary mb-1">Payment Information</strong>
               <div className="fw-semibold text-dark">{order.payment_method}</div>
-              <div className="text-muted">Total: ${Number(order.total_amount).toFixed(2)}</div>
+              <div className="text-muted">Total: {formatPrice(order.total_amount)}</div>
               {isUnpaidOnline && isPending && (
                 <button
                   className="btn btn-primary btn-sm mt-2 fw-semibold"
@@ -208,8 +209,8 @@ export default function OrderDetails() {
                     </td>
                     <td className="text-center small text-muted">{it.category_name}</td>
                     <td className="text-center fw-semibold">{it.quantity}</td>
-                    <td className="text-end small">${Number(it.purchase_price).toFixed(2)}</td>
-                    <td className="text-end pe-4 fw-bold text-dark">${Number(it.item_total).toFixed(2)}</td>
+                    <td className="text-end small">{formatPrice(it.purchase_price)}</td>
+                    <td className="text-end pe-4 fw-bold text-dark">{formatPrice(it.item_total)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -221,19 +222,19 @@ export default function OrderDetails() {
               <div className="d-flex justify-content-between mb-2 small text-secondary">
                 <span>Items Subtotal</span>
                 <span className="fw-semibold text-dark">
-                  ${items.reduce((s, x) => s + x.item_total, 0).toFixed(2)}
+                  {formatPrice(items.reduce((s, x) => s + x.item_total, 0))}
                 </span>
               </div>
               <div className="d-flex justify-content-between mb-2 small text-secondary">
-                <span>Shipping Fee</span>
+                <span>Delivery Charges</span>
                 <span className="fw-semibold text-dark">
-                  {order.total_amount - items.reduce((s, x) => s + x.item_total, 0) > 0 ? '$15.00' : 'FREE'}
+                  {order.total_amount - items.reduce((s, x) => s + x.item_total, 0) > 0 ? '₹49.00' : 'FREE'}
                 </span>
               </div>
               <hr />
               <div className="d-flex justify-content-between fs-5 fw-extrabold text-primary">
-                <span>Grand Total</span>
-                <span>${Number(order.total_amount).toFixed(2)}</span>
+                <span>Grand Total (INR)</span>
+                <span>{formatPrice(order.total_amount)}</span>
               </div>
             </div>
           </div>

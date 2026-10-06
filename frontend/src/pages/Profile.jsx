@@ -159,20 +159,22 @@ export default function Profile() {
                   </div>
 
                   <div className="col-md-6">
-                    <label className="form-label small fw-semibold text-secondary">Phone Number</label>
+                    <label className="form-label small fw-semibold text-secondary">Mobile Number (+91)</label>
                     <input
                       type="tel"
                       className="form-control"
+                      placeholder="+91 98765 43210"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                     />
                   </div>
 
                   <div className="col-12">
-                    <label className="form-label small fw-semibold text-secondary">Default Shipping Address</label>
+                    <label className="form-label small fw-semibold text-secondary">Default Delivery Address (India)</label>
                     <textarea
                       className="form-control"
                       rows="3"
+                      placeholder="Flat/House No., Street/Colony, City, State - PIN code"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                     ></textarea>

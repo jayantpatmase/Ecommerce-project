@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { formatPrice } from '../utils/format';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import ErrorMessage from '../components/ErrorMessage';
@@ -133,11 +134,11 @@ export default function Wishlist() {
                     <div className="mt-auto pt-2">
                       <div className="d-flex align-items-baseline gap-2 mb-3">
                         <span className="fs-5 fw-bold text-dark">
-                          ${Number(item.final_price).toFixed(2)}
+                          {formatPrice(item.final_price)}
                         </span>
                         {item.discount > 0 && (
                           <span className="text-muted small text-decoration-line-through">
-                            ${Number(item.price).toFixed(2)}
+                            {formatPrice(item.price)}
                           </span>
                         )}
                       </div>

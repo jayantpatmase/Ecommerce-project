@@ -79,7 +79,7 @@ export default function Register() {
                       type="text"
                       className="form-control"
                       name="name"
-                      placeholder="Jane Doe"
+                      placeholder="e.g. Rahul Sharma"
                       value={form.name}
                       onChange={handleChange}
                       required
@@ -92,7 +92,7 @@ export default function Register() {
                       type="email"
                       className="form-control"
                       name="email"
-                      placeholder="jane@example.com"
+                      placeholder="rahul@example.com"
                       value={form.email}
                       onChange={handleChange}
                       required
@@ -100,24 +100,24 @@ export default function Register() {
                   </div>
 
                   <div className="col-md-6">
-                    <label className="form-label small fw-semibold text-secondary">Phone Number</label>
+                    <label className="form-label small fw-semibold text-secondary">Mobile Number (+91)</label>
                     <input
                       type="tel"
                       className="form-control"
                       name="phone"
-                      placeholder="+1 555 123 4567"
+                      placeholder="+91 98765 43210"
                       value={form.phone}
                       onChange={handleChange}
                     />
                   </div>
 
                   <div className="col-12">
-                    <label className="form-label small fw-semibold text-secondary">Shipping Address</label>
+                    <label className="form-label small fw-semibold text-secondary">Delivery Address (India)</label>
                     <textarea
                       className="form-control"
                       rows="2"
                       name="address"
-                      placeholder="123 Shopping St, City, Country"
+                      placeholder="Flat/House No, Street/Colony, City, State - PIN code"
                       value={form.address}
                       onChange={handleChange}
                     ></textarea>

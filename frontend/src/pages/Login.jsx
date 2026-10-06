@@ -120,14 +120,14 @@ export default function Login() {
                     className="btn btn-sm btn-outline-secondary w-50"
                     onClick={() => handleQuickFill('john.doe@example.com', 'Customer@123')}
                   >
-                    <i className="bi bi-person me-1"></i> Customer
+                    <i className="bi bi-person me-1"></i> Rahul (Customer)
                   </button>
                   <button
                     type="button"
                     className="btn btn-sm btn-outline-primary w-50"
                     onClick={() => handleQuickFill('admin@eshop.com', 'Admin@123')}
                   >
-                    <i className="bi bi-shield-lock me-1"></i> Admin
+                    <i className="bi bi-shield-lock me-1"></i> Admin (India)
                   </button>
                 </div>
               </div>

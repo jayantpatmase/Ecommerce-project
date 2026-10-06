@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { formatPrice } from '../utils/format';
 import CartItem from '../components/CartItem';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
@@ -131,26 +132,26 @@ export default function Cart() {
 
                 <div className="d-flex justify-content-between mb-2 small text-secondary">
                   <span>Subtotal ({summary.total_quantity} units)</span>
-                  <span className="fw-semibold text-dark">${summary.subtotal.toFixed(2)}</span>
+                  <span className="fw-semibold text-dark">{formatPrice(summary.subtotal)}</span>
                 </div>
 
                 {summary.discount_total > 0 && (
                   <div className="d-flex justify-content-between mb-2 small text-success">
                     <span>Discount Savings</span>
-                    <span className="fw-semibold">-${summary.discount_total.toFixed(2)}</span>
+                    <span className="fw-semibold">-{formatPrice(summary.discount_total)}</span>
                   </div>
                 )}
 
                 <div className="d-flex justify-content-between mb-3 small text-secondary">
-                  <span>Estimated Shipping</span>
+                  <span>Delivery Charges</span>
                   <span className="fw-semibold text-dark">
-                    {summary.shipping === 0 ? <span className="badge bg-success-subtle text-success">FREE</span> : `$${summary.shipping.toFixed(2)}`}
+                    {summary.shipping === 0 ? <span className="badge bg-success-subtle text-success">FREE</span> : formatPrice(summary.shipping)}
                   </span>
                 </div>
 
-                {summary.subtotal < 150 && (
+                {summary.subtotal < 999 && (
                   <div className="alert alert-info py-2 px-3 small rounded-2 mb-3" style={{ fontSize: '0.8rem' }}>
-                    <i className="bi bi-info-circle me-1"></i> Add <strong>${(150 - summary.subtotal).toFixed(2)}</strong> more for FREE shipping!
+                    <i className="bi bi-info-circle me-1"></i> Add <strong>{formatPrice(999 - summary.subtotal)}</strong> more for FREE delivery!
                   </div>
                 )}
 
@@ -158,7 +159,7 @@ export default function Cart() {
 
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <span className="fs-6 fw-bold text-dark">Total Amount</span>
-                  <span className="fs-4 fw-extrabold text-primary">${summary.grand_total.toFixed(2)}</span>
+                  <span className="fs-4 fw-extrabold text-primary">{formatPrice(summary.grand_total)}</span>
                 </div>
 
                 <button

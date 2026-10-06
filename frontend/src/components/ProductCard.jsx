@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+import { formatPrice } from '../utils/format';
 
 export default function ProductCard({ product, onWishlistChange = null, isWishlisted = false }) {
   const { user, refreshCounts } = useAuth();
@@ -112,11 +113,11 @@ export default function ProductCard({ product, onWishlistChange = null, isWishli
           <div className="d-flex align-items-baseline justify-content-between mb-2">
             <div>
               <span className="price-current">
-                ${Number(product.final_price || product.price).toFixed(2)}
+                {formatPrice(product.final_price || product.price)}
               </span>
               {hasDiscount && (
                 <span className="price-original">
-                  ${Number(product.price).toFixed(2)}
+                  {formatPrice(product.price)}
                 </span>
               )}
             </div>

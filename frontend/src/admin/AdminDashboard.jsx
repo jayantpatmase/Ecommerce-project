@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import OrderStatusBadge from '../components/OrderStatusBadge';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
+import { formatPrice } from '../utils/format';
 
 export default function AdminDashboard() {
   const [data, setData] = useState(null);
@@ -55,11 +56,11 @@ export default function AdminDashboard() {
           <div className="stat-card">
             <div className="d-flex align-items-center justify-content-between">
               <div>
-                <span className="text-muted small fw-semibold">Total Revenue</span>
-                <h3 className="fw-extrabold text-success mt-1 mb-0">${stats.total_sales?.toFixed(2)}</h3>
+                <span className="text-muted small fw-semibold">Total Revenue (INR)</span>
+                <h3 className="fw-extrabold text-success mt-1 mb-0">{formatPrice(stats.total_sales || 0)}</h3>
               </div>
               <div className="stat-icon bg-success-subtle text-success">
-                <i className="bi bi-currency-dollar"></i>
+                <i className="bi bi-currency-rupee"></i>
               </div>
             </div>
           </div>
@@ -189,7 +190,7 @@ export default function AdminDashboard() {
                         <div className="fw-semibold text-dark">{ord.customer_name}</div>
                         <span className="text-muted" style={{ fontSize: '0.75rem' }}>{ord.customer_email}</span>
                       </td>
-                      <td className="fw-bold text-primary">${Number(ord.total_amount).toFixed(2)}</td>
+                      <td className="fw-bold text-primary">{formatPrice(ord.total_amount)}</td>
                       <td>
                         <span className="badge bg-secondary-subtle text-secondary">{ord.payment_status}</span>
                       </td>

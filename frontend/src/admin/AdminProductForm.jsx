@@ -203,7 +203,7 @@ export default function AdminProductForm() {
 
               <div className="row g-3">
                 <div className="col-md-4">
-                  <label className="form-label small fw-semibold text-secondary">Regular Price ($) *</label>
+                  <label className="form-label small fw-semibold text-secondary">Regular Price (₹) *</label>
                   <input
                     type="number"
                     step="0.01"

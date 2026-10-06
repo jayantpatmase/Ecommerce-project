@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import OrderStatusBadge from '../components/OrderStatusBadge';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
+import { formatPrice } from '../utils/format';
 
 export default function AdminOrderDetails() {
   const { id } = useParams();
@@ -148,7 +149,7 @@ export default function AdminOrderDetails() {
                 <span className="text-muted d-block">Payment Method</span>
                 <div className="fw-semibold text-dark">{order.payment_method}</div>
                 <span className="text-muted d-block mt-2">Current Total</span>
-                <div className="fs-5 fw-bold text-primary">${Number(order.total_amount).toFixed(2)}</div>
+                <div className="fs-5 fw-bold text-primary">{formatPrice(order.total_amount)}</div>
               </div>
             </div>
           </div>
@@ -192,8 +193,8 @@ export default function AdminOrderDetails() {
                         <span className="badge bg-secondary-subtle text-secondary">{it.current_stock} available</span>
                       </td>
                       <td className="text-center fw-bold">{it.quantity}</td>
-                      <td className="text-end">${Number(it.purchase_price).toFixed(2)}</td>
-                      <td className="text-end pe-3 fw-bold text-dark">${Number(it.item_total).toFixed(2)}</td>
+                      <td className="text-end">{formatPrice(it.purchase_price)}</td>
+                      <td className="text-end pe-3 fw-bold text-dark">{formatPrice(it.item_total)}</td>
                     </tr>
                   ))}
                 </tbody>

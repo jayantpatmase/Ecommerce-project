@@ -26,7 +26,10 @@ export default function Navbar() {
         {/* Brand */}
         <Link className="navbar-brand d-flex align-items-center gap-2" to="/">
           <i className="bi bi-bag-check-fill text-primary fs-3"></i>
-          <span>E-Shop</span>
+          <span className="fw-bold">E-Shop <span className="text-warning">India</span></span>
+          <span className="badge bg-light text-dark border px-2 py-1 ms-1 d-none d-sm-inline-block small" style={{ fontSize: '0.72rem' }}>
+            🇮🇳 ₹ INR
+          </span>
         </Link>
 
         {/* Mobile Toggle */}

@@ -61,8 +61,8 @@ foreach ($cartItems as $row) {
     ];
 }
 
-// Shipping rule: Free shipping if subtotal >= $150 or empty, else $15 flat
-$shipping = ($subtotal >= 150.00 || empty($items)) ? 0.00 : 15.00;
+// Shipping rule: Free delivery if subtotal >= ₹999 or empty, else ₹49 flat
+$shipping = ($subtotal >= 999.00 || empty($items)) ? 0.00 : 49.00;
 $grandTotal = round($subtotal + $shipping, 2);
 
 Response::success([

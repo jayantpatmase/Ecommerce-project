@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
+import { formatPrice } from '../utils/format';
 
 export default function AdminInventory() {
   const [inventory, setInventory] = useState([]);
@@ -153,7 +154,7 @@ export default function AdminInventory() {
                       </div>
                     </td>
                     <td>{item.category_name}</td>
-                    <td className="fw-semibold">${Number(item.price).toFixed(2)}</td>
+                    <td className="fw-semibold">{formatPrice(item.price)}</td>
                     <td className="fw-bold fs-6">{item.stock}</td>
                     <td>
                       <span className={`badge bg-${item.stock_badge}-subtle text-${item.stock_badge} fw-semibold px-2 py-1`}>

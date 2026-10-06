@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { formatPrice } from '../utils/format';
 import Reviews from '../components/Reviews';
 import ProductCard from '../components/ProductCard';
 import Loading from '../components/Loading';
@@ -150,12 +151,12 @@ export default function ProductDetails() {
             {/* Price Box */}
             <div className="p-3 bg-light rounded-3 mb-4 d-flex align-items-baseline gap-3">
               <span className="display-6 fw-bold text-primary">
-                ${Number(product.final_price || product.price).toFixed(2)}
+                {formatPrice(product.final_price || product.price)}
               </span>
               {hasDiscount && (
                 <>
                   <span className="fs-5 text-muted text-decoration-line-through">
-                    ${Number(product.price).toFixed(2)}
+                    {formatPrice(product.price)}
                   </span>
                   <span className="badge bg-danger fs-6 px-2 py-1">
                     -{Number(product.discount)}% OFF
@@ -254,11 +255,11 @@ export default function ProductDetails() {
               <div className="row g-2 text-muted small">
                 <div className="col-sm-6 d-flex align-items-center gap-2">
                   <i className="bi bi-truck text-primary fs-5"></i>
-                  <span>Free shipping over $150</span>
+                  <span>Free delivery over ₹999 across India</span>
                 </div>
                 <div className="col-sm-6 d-flex align-items-center gap-2">
                   <i className="bi bi-arrow-counterclockwise text-primary fs-5"></i>
-                  <span>30-day money-back guarantee</span>
+                  <span>7-Day easy replacement guarantee</span>
                 </div>
               </div>
             </div>

@@ -57,7 +57,7 @@ export default function ProductFilters({
 
       {/* Price Range */}
       <div className="mb-4">
-        <label className="form-label fw-bold small text-uppercase text-secondary mb-2">Price Range ($)</label>
+        <label className="form-label fw-bold small text-uppercase text-secondary mb-2">Price Range (₹)</label>
         <div className="d-flex align-items-center gap-2">
           <input
             type="number"
