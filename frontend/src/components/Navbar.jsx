@@ -34,6 +34,9 @@ export default function Navbar() {
             <div className="d-flex align-items-baseline gap-1">
               <span>E-Shop</span>
               <span className="text-primary fw-extrabold">One</span>
+              <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0 ms-1 d-none d-sm-inline-block" style={{ fontSize: '0.68rem' }}>
+                🇮🇳 ₹ INR
+              </span>
             </div>
           </Link>
 
