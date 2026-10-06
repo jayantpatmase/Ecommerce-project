@@ -38,93 +38,129 @@ export default function Home() {
   }, []);
 
   if (loading) {
-    return <Loading message="Loading OneUI storefront..." />;
+    return <Loading message="Loading Galaxy Storefront..." />;
   }
 
+  // Pre-configured Galaxy Store App Icon styles
+  const categoryGradients = [
+    { bg: 'linear-gradient(135deg, #0072de 0%, #00c6ff 100%)', icon: 'bi-headphones' },
+    { bg: 'linear-gradient(135deg, #8a2387 0%, #e94057 100%)', icon: 'bi-gem' },
+    { bg: 'linear-gradient(135deg, #f12711 0%, #f5af19 100%)', icon: 'bi-shield-check' },
+    { bg: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', icon: 'bi-cup-hot-fill' },
+    { bg: 'linear-gradient(135deg, #4776e6 0%, #8e54e9 100%)', icon: 'bi-book-half' },
+    { bg: 'linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%)', icon: 'bi-percent' }
+  ];
+
   return (
-    <div className="pb-5">
-      {/* 1. OneUI Viewing Header Area */}
-      <section className="oneui-viewing-header">
-        <div className="container">
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
+    <div className="pb-4">
+      {/* 1. Samsung One UI Glance & Weather Widget */}
+      <section className="px-3 pt-3 pb-2">
+        <div className="card border-0 rounded-4 p-3 bg-white shadow-sm mb-3">
+          <div className="d-flex justify-content-between align-items-center">
             <div>
-              <span className="badge bg-primary-subtle text-primary mb-2 px-3 py-1 fw-bold">
-                E-SHOP INDIA • ONE UI EDITION
-              </span>
-              <h2>Simplicity within reach.</h2>
-              <p>Discover hand-picked electronics, fashion, and lifestyle essentials with Pan-India express delivery.</p>
+              <div className="text-muted small fw-semibold" style={{ fontSize: '0.78rem' }}>
+                <i className="bi bi-geo-alt-fill text-danger me-1"></i> Pan-India Express
+              </div>
+              <h5 className="fw-extrabold text-dark mb-0" style={{ letterSpacing: '-0.02em' }}>
+                Galaxy Store India
+              </h5>
             </div>
-            <div className="d-flex align-items-center gap-2">
-              <Link to="/products" className="btn btn-primary btn-sm px-3 shadow-sm">
-                Explore Catalog <i className="bi bi-arrow-right ms-1"></i>
-              </Link>
+            <div className="text-end">
+              <span className="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-bold small">
+                One UI 6.1
+              </span>
+              <div className="text-muted small mt-1" style={{ fontSize: '0.72rem' }}>
+                <i className="bi bi-sun-fill text-warning me-1"></i> 28°C • Mumbai
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="container">
-        {/* 2. OneUI Island Hero Banner */}
-        <section className="oneui-hero-card">
-          <div className="row align-items-center g-4 position-relative" style={{ zIndex: 1 }}>
-            <div className="col-lg-7">
-              <span className="badge bg-warning text-dark fw-bold px-3 py-1 mb-3 rounded-pill">
-                FESTIVAL SPECIAL 2026
+      <div className="px-3">
+        {/* 2. Samsung Galaxy Store App Icons (Squircle Category Grid) */}
+        <section className="card border-0 rounded-4 p-3 bg-white shadow-sm mb-4">
+          <div className="d-flex justify-content-between align-items-center mb-3 px-1">
+            <span className="fw-bold text-dark small text-uppercase" style={{ letterSpacing: '0.5px' }}>
+              Explore Categories
+            </span>
+            <Link to="/products" className="text-primary text-decoration-none small fw-semibold">
+              All Items <i className="bi bi-chevron-right"></i>
+            </Link>
+          </div>
+
+          <div className="row g-2 justify-content-center">
+            {categories.slice(0, 6).map((cat, idx) => {
+              const style = categoryGradients[idx % categoryGradients.length];
+              return (
+                <div key={cat.id} className="col-4 col-sm-2 text-center">
+                  <Link to={`/products?category=${cat.id}`} className="galaxy-app-tile">
+                    <div
+                      className="app-icon-squircle mx-auto"
+                      style={{ background: style.bg }}
+                    >
+                      <i className={`bi ${style.icon}`}></i>
+                    </div>
+                    <span className="app-label">{cat.name}</span>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* 3. Samsung Galaxy Hero Banner Card */}
+        <section className="oneui-hero-card mb-4" style={{ borderRadius: '28px', padding: '2.5rem 1.75rem' }}>
+          <div className="row align-items-center g-3 position-relative" style={{ zIndex: 1 }}>
+            <div className="col-12 col-md-7">
+              <span className="badge bg-warning text-dark fw-bold px-3 py-1 mb-2 rounded-pill">
+                FEATURED PROMO
               </span>
-              <h1 className="display-5 fw-extrabold text-white mb-3" style={{ letterSpacing: '-0.03em', lineHeight: 1.15 }}>
-                Engineered for sound. Crafted for comfort.
-              </h1>
-              <p className="lead mb-4" style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '1.1rem' }}>
-                Pro Wireless ANC Headphones with 40-hour battery life and spatial audio. Order now with free Pan-India delivery &amp; instant UPI payment.
+              <h2 className="fw-extrabold text-white mb-2" style={{ letterSpacing: '-0.03em', lineHeight: 1.15, fontSize: '1.85rem' }}>
+                Pro Wireless ANC
+              </h2>
+              <p className="mb-3" style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '0.92rem' }}>
+                Active Noise Cancellation &amp; 40-hour battery. Special India pricing with instant UPI checkout.
               </p>
-              <div className="d-flex flex-wrap gap-3">
-                <Link to="/products/1" className="btn btn-primary btn-lg px-4 shadow">
-                  Shop Deal (₹2,124) <i className="bi bi-chevron-right ms-1"></i>
+              <div className="d-flex gap-2">
+                <Link to="/products/1" className="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow">
+                  ₹2,124 <i className="bi bi-arrow-right ms-1"></i>
                 </Link>
-                <Link to="/products?discount=15" className="btn btn-outline-light btn-lg px-4">
-                  View All Offers
+                <Link to="/products?discount=15" className="btn btn-outline-light btn-sm rounded-pill px-3">
+                  Offers
                 </Link>
               </div>
             </div>
 
-            <div className="col-lg-5 text-center">
-              <div className="position-relative p-3 rounded-4" style={{ background: 'rgba(255, 255, 255, 0.08)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.15)' }}>
+            <div className="col-12 col-md-5 text-center mt-3 mt-md-0">
+              <div className="p-2 rounded-4" style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)' }}>
                 <img
                   src="/uploads/products/headphones.svg"
-                  alt="Featured Hero Product"
-                  className="img-fluid rounded-4 shadow-lg"
-                  style={{ maxHeight: '320px', objectFit: 'contain' }}
+                  alt="Featured Product"
+                  className="img-fluid rounded-3"
+                  style={{ maxHeight: '180px', objectFit: 'contain' }}
                 />
-                <div className="position-absolute bottom-0 start-0 m-3 p-3 bg-white text-dark rounded-4 shadow text-start d-none d-sm-block" style={{ border: '1px solid var(--oneui-border-subtle)' }}>
-                  <div className="badge bg-danger rounded-pill mb-1">-15% OFF</div>
-                  <h6 className="fw-bold mb-0 text-dark">Wireless ANC Pro</h6>
-                  <span className="text-primary fw-extrabold fs-5">₹2,124</span>
-                  <span className="text-muted text-decoration-line-through small ms-2">₹2,499</span>
-                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 3. OneUI Category Quick Filter Pill Carousel */}
-        <section className="mb-5">
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h5 className="fw-bold mb-0 text-dark">
-              <i className="bi bi-collection me-2 text-primary"></i>Browse by Category
-            </h5>
-            <Link to="/products" className="text-decoration-none text-primary fw-semibold small">
-              View All <i className="bi bi-chevron-right"></i>
-            </Link>
+        {/* 4. OneUI Quick Pill Filter Carousel */}
+        <section className="mb-4">
+          <div className="d-flex justify-content-between align-items-center mb-2 px-1">
+            <h6 className="fw-bold mb-0 text-dark">
+              <i className="bi bi-sliders me-1 text-primary"></i> Quick Filter
+            </h6>
           </div>
 
-          <div className="oneui-chip-carousel">
+          <div className="oneui-chip-carousel py-1">
             <Link
               to="/products"
               className={`oneui-chip ${!activeCategoryTab ? 'active' : ''}`}
               onClick={() => setActiveCategoryTab('')}
             >
-              <i className="bi bi-grid-fill"></i>
-              <span>All Items</span>
+              <i className="bi bi-stars"></i>
+              <span>All Products</span>
             </Link>
             {categories.map((cat) => (
               <Link
@@ -133,10 +169,9 @@ export default function Home() {
                 className={`oneui-chip ${activeCategoryTab === String(cat.id) ? 'active' : ''}`}
                 onClick={() => setActiveCategoryTab(String(cat.id))}
               >
-                <i className="bi bi-tag-fill text-muted"></i>
                 <span>{cat.name}</span>
                 {cat.product_count !== undefined && (
-                  <span className="badge bg-light text-dark rounded-pill py-0 px-2 small">
+                  <span className="badge bg-light text-dark rounded-pill py-0 px-2 small ms-1">
                     {cat.product_count}
                   </span>
                 )}
@@ -145,132 +180,146 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 4. OneUI Top Rated / Featured Products Grid */}
-        <section className="mb-5">
-          <div className="d-flex justify-content-between align-items-end mb-3">
+        {/* 5. Top Rated Products Section */}
+        <section className="mb-4">
+          <div className="d-flex justify-content-between align-items-end mb-3 px-1">
             <div>
-              <span className="text-primary text-uppercase fw-bold small">Customer Favorites</span>
-              <h4 className="fw-bold text-dark mb-0">Featured Products</h4>
+              <span className="text-primary text-uppercase fw-bold small" style={{ fontSize: '0.72rem' }}>
+                Customer Favorites
+              </span>
+              <h5 className="fw-bold text-dark mb-0">Featured Devices</h5>
             </div>
             <Link to="/products?sort=rating" className="text-decoration-none text-primary fw-semibold small">
-              See All <i className="bi bi-chevron-right"></i>
+              More <i className="bi bi-chevron-right"></i>
             </Link>
           </div>
 
-          <div className="row g-4">
+          <div className="row g-3">
             {featuredProducts.map((prod) => (
-              <div key={prod.id} className="col-12 col-sm-6 col-lg-3">
+              <div key={prod.id} className="col-12 col-sm-6 col-md-6 col-lg-3">
                 <ProductCard product={prod} />
               </div>
             ))}
           </div>
         </section>
 
-        {/* 5. OneUI Mid-Page Promo Island */}
-        <section className="card border-0 rounded-4 p-4 p-md-5 mb-5 shadow-sm text-white" style={{ background: 'linear-gradient(135deg, #0072de 0%, #0056b3 100%)' }}>
-          <div className="row align-items-center g-4">
-            <div className="col-lg-8">
-              <span className="badge bg-white text-primary fw-bold px-3 py-1 rounded-pill mb-2">LIMITED TIME</span>
-              <h3 className="display-6 fw-bold mb-2 text-white">Save Up to 20% on Laptops &amp; Audio</h3>
-              <p className="mb-0 text-white-50">Hand-selected devices with manufacturer warranty, free Pan-India doorstep delivery over ₹999, and verified UPI payment.</p>
+        {/* 6. Samsung Wallet / Indian Payment Trust Pill */}
+        <section className="card border-0 rounded-4 p-3 bg-white shadow-sm mb-4">
+          <div className="d-flex align-items-center gap-3">
+            <div
+              className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm flex-shrink-0"
+              style={{ width: '44px', height: '44px', fontSize: '1.3rem' }}
+            >
+              <i className="bi bi-wallet2"></i>
             </div>
-            <div className="col-lg-4 text-lg-end">
-              <Link to="/products?discount=10" className="btn btn-light btn-lg text-primary fw-bold px-4 shadow">
-                Browse Deals <i className="bi bi-arrow-right ms-1"></i>
-              </Link>
+            <div className="flex-grow-1">
+              <h6 className="fw-bold text-dark mb-0">One UI Pay &amp; Express Checkout</h6>
+              <span className="text-muted small" style={{ fontSize: '0.75rem' }}>
+                UPI (GPay/PhonePe/Paytm), RuPay, NetBanking &amp; Cash on Delivery
+              </span>
             </div>
+            <span className="badge bg-success-subtle text-success rounded-pill fw-bold small">
+              100% Safe
+            </span>
           </div>
         </section>
 
-        {/* 6. OneUI Special Discounts Grid */}
-        <section className="mb-5">
-          <div className="d-flex justify-content-between align-items-end mb-3">
+        {/* 7. Special Discounts Grid */}
+        <section className="mb-4">
+          <div className="d-flex justify-content-between align-items-end mb-3 px-1">
             <div>
-              <span className="text-danger text-uppercase fw-bold small">Instant Savings</span>
-              <h4 className="fw-bold text-dark mb-0">Special Discounts</h4>
+              <span className="text-danger text-uppercase fw-bold small" style={{ fontSize: '0.72rem' }}>
+                Instant Price Drop
+              </span>
+              <h5 className="fw-bold text-dark mb-0">Special Offers</h5>
             </div>
             <Link to="/products?sort=discount" className="text-decoration-none text-primary fw-semibold small">
-              See All <i className="bi bi-chevron-right"></i>
+              More <i className="bi bi-chevron-right"></i>
             </Link>
           </div>
 
-          <div className="row g-4">
+          <div className="row g-3">
             {specialOffers.map((prod) => (
-              <div key={prod.id} className="col-12 col-sm-6 col-lg-3">
+              <div key={prod.id} className="col-12 col-sm-6 col-md-6 col-lg-3">
                 <ProductCard product={prod} />
               </div>
             ))}
           </div>
         </section>
 
-        {/* 7. OneUI Fresh Arrivals */}
-        <section className="mb-5">
-          <div className="d-flex justify-content-between align-items-end mb-3">
+        {/* 8. Fresh Stock Arrivals */}
+        <section className="mb-4">
+          <div className="d-flex justify-content-between align-items-end mb-3 px-1">
             <div>
-              <span className="text-primary text-uppercase fw-bold small">Just Added</span>
-              <h4 className="fw-bold text-dark mb-0">New Arrivals</h4>
+              <span className="text-primary text-uppercase fw-bold small" style={{ fontSize: '0.72rem' }}>
+                Latest Catalog
+              </span>
+              <h5 className="fw-bold text-dark mb-0">New Arrivals</h5>
             </div>
             <Link to="/products?sort=newest" className="text-decoration-none text-primary fw-semibold small">
-              See All <i className="bi bi-chevron-right"></i>
+              More <i className="bi bi-chevron-right"></i>
             </Link>
           </div>
 
-          <div className="row g-4">
+          <div className="row g-3">
             {newArrivals.map((prod) => (
-              <div key={prod.id} className="col-12 col-sm-6 col-lg-3">
+              <div key={prod.id} className="col-12 col-sm-6 col-md-6 col-lg-3">
                 <ProductCard product={prod} />
               </div>
             ))}
           </div>
         </section>
 
-        {/* 8. OneUI Squircle Feature / Trust Badges */}
-        <section className="card border-0 rounded-4 p-4 p-md-5 bg-white shadow-sm mb-4">
-          <div className="text-center mb-4">
-            <span className="text-primary text-uppercase fw-bold small">Why Customers Love Us</span>
-            <h4 className="fw-bold text-dark mb-0">Designed For Seamless Shopping</h4>
+        {/* 9. Galaxy Grouped Settings-Style Trust List */}
+        <section className="galaxy-settings-card mb-4">
+          <div className="p-3 border-bottom bg-light">
+            <span className="fw-bold text-dark small text-uppercase">
+              <i className="bi bi-shield-check text-primary me-2"></i>E-Shop India Assurance
+            </span>
           </div>
 
-          <div className="row g-4 text-center">
-            <div className="col-6 col-md-3">
-              <div className="p-3 rounded-4 bg-light h-100 border-0 transition">
-                <div className="oneui-squircle-icon bg-primary-subtle text-primary mx-auto mb-3">
-                  <i className="bi bi-truck"></i>
-                </div>
-                <h6 className="fw-bold text-dark mb-1">Free Delivery</h6>
-                <p className="text-muted small mb-0">On orders over ₹999 across 19,000+ PIN codes.</p>
-              </div>
+          <div className="galaxy-settings-item">
+            <div className="item-squircle-icon bg-primary">
+              <i className="bi bi-truck"></i>
             </div>
+            <div className="flex-grow-1">
+              <div className="fw-bold text-dark small">Pan-India Free Shipping</div>
+              <div className="text-muted small" style={{ fontSize: '0.72rem' }}>Free doorstep delivery on orders above ₹999</div>
+            </div>
+            <i className="bi bi-chevron-right text-muted small"></i>
+          </div>
 
-            <div className="col-6 col-md-3">
-              <div className="p-3 rounded-4 bg-light h-100 border-0 transition">
-                <div className="oneui-squircle-icon bg-success-subtle text-success mx-auto mb-3">
-                  <i className="bi bi-shield-check"></i>
-                </div>
-                <h6 className="fw-bold text-dark mb-1">UPI &amp; RuPay Ready</h6>
-                <p className="text-muted small mb-0">GPay, PhonePe, Paytm, RuPay, NetBanking &amp; COD.</p>
-              </div>
+          <div className="galaxy-settings-item">
+            <div className="item-squircle-icon bg-success">
+              <i className="bi bi-qr-code-scan"></i>
             </div>
+            <div className="flex-grow-1">
+              <div className="fw-bold text-dark small">UPI &amp; Doorstep Cash</div>
+              <div className="text-muted small" style={{ fontSize: '0.72rem' }}>Google Pay, PhonePe, Paytm, RuPay &amp; COD</div>
+            </div>
+            <i className="bi bi-chevron-right text-muted small"></i>
+          </div>
 
-            <div className="col-6 col-md-3">
-              <div className="p-3 rounded-4 bg-light h-100 border-0 transition">
-                <div className="oneui-squircle-icon bg-warning-subtle text-warning-emphasis mx-auto mb-3">
-                  <i className="bi bi-arrow-counterclockwise"></i>
-                </div>
-                <h6 className="fw-bold text-dark mb-1">7-Day Easy Returns</h6>
-                <p className="text-muted small mb-0">Instant replacement or 100% money-back refund.</p>
-              </div>
+          <div className="galaxy-settings-item">
+            <div className="item-squircle-icon bg-warning text-dark">
+              <i className="bi bi-arrow-counterclockwise"></i>
             </div>
+            <div className="flex-grow-1">
+              <div className="fw-bold text-dark small">7-Day Replacement Guarantee</div>
+              <div className="text-muted small" style={{ fontSize: '0.72rem' }}>Hassle-free doorstep returns and quick refunds</div>
+            </div>
+            <i className="bi bi-chevron-right text-muted small"></i>
+          </div>
 
-            <div className="col-6 col-md-3">
-              <div className="p-3 rounded-4 bg-light h-100 border-0 transition">
-                <div className="oneui-squircle-icon bg-info-subtle text-info mx-auto mb-3">
-                  <i className="bi bi-headset"></i>
-                </div>
-                <h6 className="fw-bold text-dark mb-1">Pan-India Support</h6>
-                <p className="text-muted small mb-0">Toll-free 1800-123-4567 (Mon–Sat, 9AM–8PM IST).</p>
-              </div>
+          <div className="galaxy-settings-item">
+            <div className="item-squircle-icon bg-info">
+              <i className="bi bi-headset"></i>
             </div>
+            <div className="flex-grow-1">
+              <div className="fw-bold text-dark small">Customer Helpline (1800-123-4567)</div>
+              <div className="text-muted small" style={{ fontSize: '0.72rem' }}>Mon–Sat 9AM–8PM IST • support@eshop.in</div>
+            </div>
+            <i className="bi bi-chevron-right text-muted small"></i>
           </div>
         </section>
       </div>

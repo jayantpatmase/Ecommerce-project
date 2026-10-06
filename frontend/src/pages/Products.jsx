@@ -16,6 +16,7 @@ export default function Products() {
   const [pagination, setPagination] = useState({ page: 1, limit: 12, total: 0, total_pages: 1 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Filter States from URL or defaults
   const search           = searchParams.get('search') || '';
@@ -103,28 +104,32 @@ export default function Products() {
             </p>
           </div>
 
-          {/* Sorting Dropdown */}
+          {/* Controls: Filter toggle on mobile + Sorting Dropdown */}
           <div className="d-flex align-items-center gap-2">
-            <label className="text-muted small fw-semibold text-nowrap">Sort By:</label>
+            <button
+              className="btn btn-sm btn-outline-primary rounded-pill d-lg-none shadow-sm"
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+            >
+              <i className="bi bi-funnel me-1"></i> {showMobileFilters ? 'Hide Filters' : 'Filters'}
+            </button>
             <select
-              className="form-select form-select-sm shadow-sm"
-              style={{ width: '190px' }}
+              className="form-select form-select-sm shadow-sm rounded-pill"
+              style={{ width: '170px' }}
               value={sort}
               onChange={(e) => updateParams({ sort: e.target.value })}
             >
-              <option value="newest">Newest Arrivals</option>
-              <option value="price_low">Price: Low to High</option>
-              <option value="price_high">Price: High to Low</option>
-              <option value="rating">Highest Rated</option>
-              <option value="discount">Biggest Discount</option>
-              <option value="name_az">Name: A to Z</option>
-              <option value="name_za">Name: Z to A</option>
+              <option value="newest">Newest</option>
+              <option value="price_low">Price: Low-High</option>
+              <option value="price_high">Price: High-Low</option>
+              <option value="rating">Top Rated</option>
+              <option value="discount">Discounts</option>
+              <option value="name_az">Name A-Z</option>
             </select>
           </div>
         </div>
 
         {/* Top Search Bar */}
-        <div className="mb-4">
+        <div className="mb-3">
           <SearchBar
             value={search}
             onChange={(val) => updateParams({ search: val })}
@@ -135,7 +140,7 @@ export default function Products() {
         {/* Main Grid: Filters Sidebar + Products Grid */}
         <div className="row g-4">
           {/* Filters Sidebar */}
-          <div className="col-lg-3">
+          <div className={`col-lg-3 ${showMobileFilters ? 'd-block' : 'd-none d-lg-block'}`}>
             <ProductFilters
               categories={categories}
               selectedCategory={selectedCategory}

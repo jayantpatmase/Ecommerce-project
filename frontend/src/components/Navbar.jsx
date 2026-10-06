@@ -200,38 +200,6 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
-
-      {/* Signature OneUI Mobile Bottom Reachability Bar */}
-      <nav className="oneui-bottom-nav d-md-none">
-        <div className="d-flex justify-content-around align-items-center">
-          <NavLink to="/" end className={({ isActive }) => `oneui-bottom-nav-item ${isActive ? 'active' : ''}`}>
-            <i className="bi bi-house-door"></i>
-            <span>Home</span>
-          </NavLink>
-
-          <NavLink to="/products" className={({ isActive }) => `oneui-bottom-nav-item ${isActive ? 'active' : ''}`}>
-            <i className="bi bi-grid"></i>
-            <span>Shop</span>
-          </NavLink>
-
-          <NavLink to="/wishlist" className={({ isActive }) => `oneui-bottom-nav-item ${isActive ? 'active' : ''}`}>
-            <i className="bi bi-heart"></i>
-            <span>Wishlist</span>
-            {wishlistCount > 0 && <span className="badge-dot"></span>}
-          </NavLink>
-
-          <NavLink to="/cart" className={({ isActive }) => `oneui-bottom-nav-item ${isActive ? 'active' : ''}`}>
-            <i className="bi bi-cart3"></i>
-            <span>Cart</span>
-            {cartCount > 0 && <span className="badge-dot"></span>}
-          </NavLink>
-
-          <NavLink to={user ? "/profile" : "/login"} className={({ isActive }) => `oneui-bottom-nav-item ${isActive ? 'active' : ''}`}>
-            <i className="bi bi-person"></i>
-            <span>{user ? 'Account' : 'Sign In'}</span>
-          </NavLink>
-        </div>
-      </nav>
     </>
   );
 }

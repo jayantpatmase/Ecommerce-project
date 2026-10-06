@@ -2,10 +2,10 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Layout & Global Components
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
+import GalaxyLayout from './components/GalaxyLayout';
+import { OneUIThemeProvider } from './context/OneUIThemeContext';
 
 // Customer Pages
 import Home from './pages/Home';
@@ -35,35 +35,34 @@ import AdminInventory from './admin/AdminInventory';
 export default function App() {
   return (
     <ErrorBoundary>
-      <div className="d-flex flex-column min-vh-100">
-        <Routes>
-          {/* Admin Protected Routes with dedicated AdminLayout */}
-          <Route
-            path="/admin"
-            element={
-              <AdminProtectedRoute>
-                <AdminLayout />
-              </AdminProtectedRoute>
-            }
-          >
-            <Route index element={<AdminDashboard />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="products/add" element={<AdminProductForm />} />
-            <Route path="products/edit/:id" element={<AdminProductForm />} />
-            <Route path="categories" element={<AdminCategories />} />
-            <Route path="customers" element={<AdminCustomers />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="orders/:id" element={<AdminOrderDetails />} />
-            <Route path="inventory" element={<AdminInventory />} />
-          </Route>
+      <OneUIThemeProvider>
+        <div className="d-flex flex-column min-vh-100">
+          <Routes>
+            {/* Admin Protected Routes with dedicated AdminLayout */}
+            <Route
+              path="/admin"
+              element={
+                <AdminProtectedRoute>
+                  <AdminLayout />
+                </AdminProtectedRoute>
+              }
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="products/add" element={<AdminProductForm />} />
+              <Route path="products/edit/:id" element={<AdminProductForm />} />
+              <Route path="categories" element={<AdminCategories />} />
+              <Route path="customers" element={<AdminCustomers />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="orders/:id" element={<AdminOrderDetails />} />
+              <Route path="inventory" element={<AdminInventory />} />
+            </Route>
 
-          {/* Customer Facing Storefront Routes */}
-          <Route
-            path="/*"
-            element={
-              <>
-                <Navbar />
-                <main className="flex-grow-1">
+            {/* Customer Facing Storefront Routes wrapped in Samsung Galaxy One UI Layout */}
+            <Route
+              path="/*"
+              element={
+                <GalaxyLayout>
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/products" element={<Products />} />
@@ -79,13 +78,12 @@ export default function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
-                </main>
-                <Footer />
-              </>
-            }
-          />
-        </Routes>
-      </div>
+                </GalaxyLayout>
+              }
+            />
+          </Routes>
+        </div>
+      </OneUIThemeProvider>
     </ErrorBoundary>
   );
 }
