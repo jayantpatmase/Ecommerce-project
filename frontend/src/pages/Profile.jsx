@@ -183,7 +183,7 @@ export default function Profile() {
 
                 <button
                   type="submit"
-                  className="btn btn-primary px-4 mt-3 fw-bold shadow-sm"
+                  className="btn btn-primary rounded-pill px-4 mt-3 fw-bold shadow-sm"
                   disabled={savingProfile}
                 >
                   {savingProfile ? 'Saving...' : 'Save Profile Changes'}
@@ -241,7 +241,7 @@ export default function Profile() {
 
                 <button
                   type="submit"
-                  className="btn btn-outline-primary px-4 mt-3 fw-bold"
+                  className="btn btn-outline-primary rounded-pill px-4 mt-3 fw-bold"
                   disabled={savingPass}
                 >
                   {savingPass ? 'Updating...' : 'Update Password'}

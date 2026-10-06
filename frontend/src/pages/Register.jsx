@@ -152,7 +152,7 @@ export default function Register() {
 
                 <button
                   type="submit"
-                  className="btn btn-primary w-100 py-2 mt-4 fw-bold shadow-sm"
+                  className="btn btn-primary btn-lg w-100 mt-4 rounded-pill fw-bold shadow-sm"
                   disabled={loading}
                 >
                   {loading ? 'Creating Account...' : 'Complete Registration'}

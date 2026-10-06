@@ -224,7 +224,7 @@ export default function ProductDetails() {
             {/* Action Buttons */}
             <div className="d-flex flex-wrap gap-3 mb-4">
               <button
-                className="btn btn-primary btn-lg flex-grow-1 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
+                className="btn btn-primary btn-lg rounded-pill flex-grow-1 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
                 onClick={() => handleAddToCart(false)}
                 disabled={isOutOfStock || addingToCart}
               >
@@ -233,7 +233,7 @@ export default function ProductDetails() {
               </button>
 
               <button
-                className="btn btn-success btn-lg flex-grow-1 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
+                className="btn btn-success btn-lg rounded-pill flex-grow-1 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
                 onClick={() => handleAddToCart(true)}
                 disabled={isOutOfStock || addingToCart}
               >
@@ -242,7 +242,7 @@ export default function ProductDetails() {
               </button>
 
               <button
-                className={`btn btn-lg border ${wishlisted ? 'btn-danger text-white' : 'btn-outline-danger'}`}
+                className={`btn btn-lg rounded-pill border px-4 ${wishlisted ? 'btn-danger text-white' : 'btn-outline-danger'}`}
                 onClick={handleToggleWishlist}
                 title="Wishlist"
               >
@@ -267,7 +267,7 @@ export default function ProductDetails() {
         </div>
 
         {/* Tabs: Description & Specifications */}
-        <div className="card border-0 shadow-sm rounded-3 p-4 bg-white mb-5">
+        <div className="card border-0 shadow-sm rounded-4 p-4 bg-white mb-5">
           <ul className="nav nav-pills mb-3 border-bottom pb-3">
             <li className="nav-item">
               <button

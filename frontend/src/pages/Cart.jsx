@@ -127,7 +127,7 @@ export default function Cart() {
 
             {/* Order Summary Checkout Card */}
             <div className="col-lg-4">
-              <div className="card border-0 shadow-sm rounded-3 p-4 bg-white sticky-top" style={{ top: '90px' }}>
+              <div className="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style={{ top: '90px' }}>
                 <h5 className="fw-bold text-dark mb-3 pb-2 border-bottom">Order Summary</h5>
 
                 <div className="d-flex justify-content-between mb-2 small text-secondary">
@@ -150,7 +150,7 @@ export default function Cart() {
                 </div>
 
                 {summary.subtotal < 999 && (
-                  <div className="alert alert-info py-2 px-3 small rounded-2 mb-3" style={{ fontSize: '0.8rem' }}>
+                  <div className="alert alert-info py-2 px-3 small rounded-3 mb-3" style={{ fontSize: '0.8rem' }}>
                     <i className="bi bi-info-circle me-1"></i> Add <strong>{formatPrice(999 - summary.subtotal)}</strong> more for FREE delivery!
                   </div>
                 )}
@@ -163,7 +163,7 @@ export default function Cart() {
                 </div>
 
                 <button
-                  className="btn btn-primary btn-lg w-100 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
+                  className="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
                   onClick={() => navigate('/checkout')}
                   disabled={updating || items.some((i) => !i.is_available)}
                 >

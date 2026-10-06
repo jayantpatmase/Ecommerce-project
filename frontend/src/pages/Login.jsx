@@ -102,7 +102,7 @@ export default function Login() {
 
                 <button
                   type="submit"
-                  className="btn btn-primary w-100 py-2 fw-bold shadow-sm"
+                  className="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm"
                   disabled={loading}
                 >
                   {loading ? 'Authenticating...' : 'Sign In'}
@@ -117,14 +117,14 @@ export default function Login() {
                 <div className="d-flex gap-2">
                   <button
                     type="button"
-                    className="btn btn-sm btn-outline-secondary w-50"
+                    className="btn btn-sm btn-outline-secondary rounded-pill w-50"
                     onClick={() => handleQuickFill('john.doe@example.com', 'Customer@123')}
                   >
                     <i className="bi bi-person me-1"></i> Rahul (Customer)
                   </button>
                   <button
                     type="button"
-                    className="btn btn-sm btn-outline-primary w-50"
+                    className="btn btn-sm btn-outline-primary rounded-pill w-50"
                     onClick={() => handleQuickFill('admin@eshop.com', 'Admin@123')}
                   >
                     <i className="bi bi-shield-lock me-1"></i> Admin (India)

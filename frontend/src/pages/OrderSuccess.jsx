@@ -101,7 +101,7 @@ export default function OrderSuccess() {
               </p>
 
               {/* Order Info Badge Box */}
-              <div className="bg-light p-4 rounded-3 my-4 text-start">
+              <div className="bg-light p-4 rounded-4 my-4 text-start">
                 <div className="row g-3">
                   <div className="col-sm-6">
                     <span className="text-muted small d-block">Order Number</span>
@@ -132,7 +132,7 @@ export default function OrderSuccess() {
 
               {/* Online Payment Action Box */}
               {isPendingOnlinePay && (
-                <div className="card border-primary bg-primary-subtle p-4 rounded-3 text-start mb-4">
+                <div className="card border-primary bg-primary-subtle p-4 rounded-4 text-start mb-4">
                   <div className="d-flex align-items-center gap-2 mb-2">
                     <i className="bi bi-credit-card text-primary fs-4"></i>
                     <h5 className="fw-bold text-dark mb-0">Online Payment Required</h5>
@@ -142,20 +142,20 @@ export default function OrderSuccess() {
                   </p>
 
                   {payError && (
-                    <div className="alert alert-danger py-2 px-3 small rounded-2 mb-3">
+                    <div className="alert alert-danger py-2 px-3 small rounded-3 mb-3">
                       <i className="bi bi-exclamation-triangle-fill me-1"></i> {payError}
                     </div>
                   )}
 
                   {paySuccess && (
-                    <div className="alert alert-success py-2 px-3 small rounded-2 mb-3">
+                    <div className="alert alert-success py-2 px-3 small rounded-3 mb-3">
                       <i className="bi bi-check-circle-fill me-1"></i> {paySuccess}
                     </div>
                   )}
 
                   <div className="d-flex flex-wrap gap-2">
                     <button
-                      className="btn btn-primary fw-bold px-4"
+                      className="btn btn-primary rounded-pill fw-bold px-4"
                       onClick={() => handleSimulatedPayment(false)}
                       disabled={paying}
                     >
@@ -163,7 +163,7 @@ export default function OrderSuccess() {
                     </button>
 
                     <button
-                      className="btn btn-outline-danger btn-sm"
+                      className="btn btn-outline-danger btn-sm rounded-pill px-3"
                       onClick={() => handleSimulatedPayment(true)}
                       disabled={paying}
                       title="Test payment failure handling and retry flow"
@@ -176,10 +176,10 @@ export default function OrderSuccess() {
 
               {/* Navigation Options */}
               <div className="d-flex flex-wrap justify-content-center gap-3">
-                <Link to={`/orders/${order.id}`} className="btn btn-primary px-4 fw-semibold">
+                <Link to={`/orders/${order.id}`} className="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
                   <i className="bi bi-receipt me-1"></i> View Order Details &amp; Invoice
                 </Link>
-                <Link to="/products" className="btn btn-outline-secondary px-4 fw-semibold">
+                <Link to="/products" className="btn btn-outline-secondary rounded-pill px-4 fw-semibold">
                   Continue Shopping
                 </Link>
               </div>

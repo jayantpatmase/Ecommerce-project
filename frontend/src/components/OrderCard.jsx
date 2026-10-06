@@ -11,7 +11,7 @@ export default function OrderCard({ order }) {
   });
 
   return (
-    <div className="card border-0 shadow-sm rounded-3 p-4 mb-3 bg-white">
+    <div className="card border-0 shadow-sm rounded-4 p-4 mb-3 bg-white">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 pb-3 border-bottom mb-3">
         <div>
           <div className="d-flex align-items-center gap-2 mb-1">
@@ -37,7 +37,7 @@ export default function OrderCard({ order }) {
           </div>
         </div>
 
-        <Link to={`/orders/${order.id}`} className="btn btn-outline-primary btn-sm px-3 fw-semibold">
+        <Link to={`/orders/${order.id}`} className="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
           View Details &amp; Invoice <i className="bi bi-chevron-right ms-1"></i>
         </Link>
       </div>

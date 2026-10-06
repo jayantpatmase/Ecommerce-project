@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function SearchBar({ value, onChange, onSearch, placeholder = 'Search by name, category or description...' }) {
+export default function SearchBar({ value, onChange, onSearch, placeholder = 'Search by product name, category or specs...' }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (onSearch) onSearch();
@@ -8,27 +8,33 @@ export default function SearchBar({ value, onChange, onSearch, placeholder = 'Se
 
   return (
     <form onSubmit={handleSubmit} className="w-100">
-      <div className="input-group shadow-sm rounded-3 overflow-hidden">
-        <span className="input-group-text bg-white border-end-0 text-muted ps-3">
-          <i className="bi bi-search"></i>
-        </span>
+      <div
+        className="d-flex align-items-center shadow-sm bg-white border p-1 ps-3 transition"
+        style={{
+          borderRadius: 'var(--oneui-r-pill)',
+          borderColor: 'var(--oneui-border)'
+        }}
+      >
+        <i className="bi bi-search text-primary fs-5 me-2"></i>
         <input
           type="text"
-          className="form-control border-start-0 py-2"
+          className="form-control border-0 bg-transparent py-2 px-1 shadow-none"
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          style={{ fontSize: '0.95rem' }}
         />
         {value && (
           <button
             type="button"
-            className="btn btn-white bg-white border-start-0 border-end-0 text-muted"
+            className="btn btn-sm text-muted border-0 bg-transparent p-0 me-2"
             onClick={() => { onChange(''); if (onSearch) onSearch(); }}
+            title="Clear search"
           >
-            <i className="bi bi-x-lg"></i>
+            <i className="bi bi-x-circle-fill fs-5"></i>
           </button>
         )}
-        <button className="btn btn-primary px-4 fw-semibold" type="submit">
+        <button className="btn btn-primary px-4 fw-bold shadow-sm" type="submit">
           Search
         </button>
       </div>

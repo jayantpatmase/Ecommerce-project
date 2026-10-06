@@ -1,26 +1,82 @@
 /* ==============================================================
    E-Commerce Website - Online Shopping Management System
-   Global Custom Stylesheet (Bootstrap 5 Enhancements)
+   Samsung OneUI Inspired Design System & Stylesheet
+   - Fluid squircle geometry (border-radius: 20px - 26px)
+   - Signature OneUI Sapphire Blue (#0072de) & porcelain canvas (#f2f4f8)
+   - Diffuse ambient shadows & tactile elastic interactions
+   - OneUI Viewing/Interaction reachability split
+   - Clean pill-shaped navigation, chips, search & controls
    ============================================================== */
 
 :root {
-  --primary: #0d6efd;
-  --primary-hover: #0b5ed7;
-  --secondary: #64748b;
-  --accent: #f59e0b;
-  --success: #10b981;
-  --danger: #ef4444;
-  --dark: #0f172a;
-  --light-bg: #f8fafc;
-  --border-color: #e2e8f0;
-  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  /* OneUI Color Palette */
+  --oneui-primary: #0072de;
+  --oneui-primary-hover: #005fbc;
+  --oneui-primary-active: #004ea1;
+  --oneui-primary-subtle: #e8f2fc;
+  --oneui-primary-text: #0066cc;
+
+  --oneui-canvas: #f2f4f8;
+  --oneui-surface: #ffffff;
+  --oneui-surface-muted: #f6f8fb;
+  --oneui-surface-glass: rgba(255, 255, 255, 0.92);
+
+  --oneui-text-title: #111827;
+  --oneui-text-body: #374151;
+  --oneui-text-muted: #6b7280;
+  --oneui-text-subtle: #9ca3af;
+
+  --oneui-border: #e5e9f0;
+  --oneui-border-subtle: rgba(0, 0, 0, 0.05);
+
+  /* Semantic Pastels */
+  --oneui-success: #10b981;
+  --oneui-success-subtle: #e6f9f0;
+  --oneui-warning: #f59e0b;
+  --oneui-warning-subtle: #fef7e6;
+  --oneui-danger: #ef4444;
+  --oneui-danger-subtle: #feecee;
+  --oneui-info: #06b6d4;
+  --oneui-info-subtle: #e6f8fa;
+  --oneui-indigo: #6366f1;
+  --oneui-indigo-subtle: #eef2ff;
+
+  /* Bootstrap Variable Overrides */
+  --bs-primary: #0072de;
+  --bs-primary-rgb: 0, 114, 222;
+  --bs-body-bg: #f2f4f8;
+  --bs-body-color: #374151;
+  --bs-border-color: #e5e9f0;
+
+  /* Radius Tokens */
+  --oneui-r-sm: 12px;
+  --oneui-r-md: 16px;
+  --oneui-r-squircle: 20px;
+  --oneui-r-card: 24px;
+  --oneui-r-hero: 28px;
+  --oneui-r-pill: 9999px;
+
+  /* Diffuse Shadows */
+  --oneui-shadow-subtle: 0 2px 8px rgba(17, 24, 39, 0.03);
+  --oneui-shadow-card: 0 8px 24px -4px rgba(17, 24, 39, 0.05), 0 2px 6px -1px rgba(17, 24, 39, 0.02);
+  --oneui-shadow-hover: 0 16px 36px -6px rgba(17, 24, 39, 0.09), 0 4px 12px -2px rgba(17, 24, 39, 0.03);
+  --oneui-shadow-float: 0 12px 32px -4px rgba(0, 114, 222, 0.22);
+  --oneui-shadow-modal: 0 24px 48px -12px rgba(17, 24, 39, 0.18);
+
+  /* Easing */
+  --oneui-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+/* ==============================================================
+   Global Typography & Layout
+   ============================================================== */
+
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: #334155;
-  background-color: var(--light-bg);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--oneui-text-body);
+  background-color: var(--oneui-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -36,145 +92,422 @@ main {
   flex: 1 0 auto;
 }
 
-/* Navbar */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--oneui-text-title);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* OneUI Viewing Header Area */
+.oneui-viewing-header {
+  padding: 2.5rem 0 1.5rem;
+  background: transparent;
+}
+
+.oneui-viewing-header h1,
+.oneui-viewing-header h2 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.35rem;
+}
+
+.oneui-viewing-header p {
+  color: var(--oneui-text-muted);
+  font-size: 1.05rem;
+  margin-bottom: 0;
+}
+
+/* ==============================================================
+   OneUI Glassmorphic Navigation Bar
+   ============================================================== */
+
+.oneui-navbar {
+  background: var(--oneui-surface-glass) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--oneui-border-subtle);
+  transition: all 0.25s var(--oneui-ease);
+}
+
 .navbar-brand {
   font-weight: 800;
-  letter-spacing: -0.5px;
-  color: var(--primary) !important;
-  font-size: 1.45rem;
+  letter-spacing: -0.03em;
+  color: var(--oneui-primary) !important;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
-.nav-link {
-  font-weight: 500;
-  color: #475569 !important;
-  transition: color 0.2s ease;
+.navbar-brand .brand-icon {
+  width: 38px;
+  height: 38px;
+  background: var(--oneui-primary-subtle);
+  color: var(--oneui-primary);
+  border-radius: var(--oneui-r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  transition: transform 0.2s var(--oneui-ease);
 }
 
-.nav-link:hover, .nav-link.active {
-  color: var(--primary) !important;
+.navbar-brand:hover .brand-icon {
+  transform: scale(1.08);
 }
 
-/* Badge counters */
-.badge-count {
+.navbar .nav-link {
+  font-weight: 600;
+  color: var(--oneui-text-muted) !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: var(--oneui-r-pill);
+  transition: all 0.2s var(--oneui-ease);
+}
+
+.navbar .nav-link:hover {
+  color: var(--oneui-primary) !important;
+  background: var(--oneui-primary-subtle);
+}
+
+.navbar .nav-link.active {
+  color: var(--oneui-primary) !important;
+  background: var(--oneui-primary-subtle);
+  font-weight: 700;
+}
+
+/* Nav Action Icons (Wishlist, Cart) */
+.nav-icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--oneui-r-pill);
+  background: var(--oneui-surface-muted);
+  color: var(--oneui-text-body);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s var(--oneui-ease);
+  text-decoration: none;
+  border: 1px solid var(--oneui-border-subtle);
+}
+
+.nav-icon-btn:hover {
+  background: var(--oneui-primary-subtle);
+  color: var(--oneui-primary);
+  transform: translateY(-2px);
+}
+
+.nav-icon-btn .badge-count {
   position: absolute;
-  top: -6px;
-  right: -8px;
-  font-size: 0.68rem;
+  top: -2px;
+  right: -2px;
+  font-size: 0.7rem;
+  font-weight: 700;
   padding: 3px 6px;
-  border-radius: 999px;
+  border-radius: var(--oneui-r-pill);
+  border: 2px solid #ffffff;
 }
 
-/* Hero Section */
-.hero-section {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+/* Search Bar in Navbar */
+.oneui-nav-search {
+  background: var(--oneui-surface-muted);
+  border: 1px solid var(--oneui-border-subtle);
+  border-radius: var(--oneui-r-pill);
+  padding: 0.45rem 1rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s var(--oneui-ease);
+}
+
+.oneui-nav-search:focus-within {
+  background: #ffffff;
+  border-color: var(--oneui-primary);
+  box-shadow: 0 0 0 4px rgba(0, 114, 222, 0.14);
+}
+
+.oneui-nav-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  font-size: 0.88rem;
+  width: 190px;
+}
+
+.oneui-nav-search input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ==============================================================
+   OneUI Signature Mobile Reachability Bottom Bar
+   ============================================================== */
+
+.oneui-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--oneui-surface-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--oneui-border-subtle);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  z-index: 1040;
+  padding: 0.5rem 0.75rem;
+}
+
+.oneui-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--oneui-text-muted);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--oneui-r-md);
+  transition: all 0.2s var(--oneui-ease);
+  position: relative;
+  flex: 1;
+}
+
+.oneui-bottom-nav-item i {
+  font-size: 1.25rem;
+  margin-bottom: 2px;
+}
+
+.oneui-bottom-nav-item.active {
+  color: var(--oneui-primary);
+  font-weight: 700;
+}
+
+.oneui-bottom-nav-item .badge-dot {
+  position: absolute;
+  top: 4px;
+  right: 28%;
+  width: 8px;
+  height: 8px;
+  background-color: var(--oneui-danger);
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+}
+
+/* ==============================================================
+   OneUI Hero Island Banner
+   ============================================================== */
+
+.oneui-hero-card {
+  background: linear-gradient(135deg, #0b1a30 0%, #0d294d 50%, #103c6e 100%);
   color: #ffffff;
-  padding: 5rem 0;
+  border-radius: var(--oneui-r-hero);
+  padding: 3.5rem 3rem;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--oneui-shadow-hover);
+  margin-bottom: 2rem;
 }
 
-.hero-section::after {
+.oneui-hero-card::before {
   content: '';
   position: absolute;
-  top: -50%;
+  top: -20%;
   right: -10%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(13, 110, 253, 0.25) 0%, rgba(0,0,0,0) 70%);
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(0, 114, 222, 0.35) 0%, rgba(0, 0, 0, 0) 70%);
   pointer-events: none;
 }
 
-/* Product Cards */
-.product-card {
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  background: #ffffff;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: var(--card-shadow);
+.oneui-hero-card::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: 20%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+}
+
+@media (max-width: 767.98px) {
+  .oneui-hero-card {
+    padding: 2.5rem 1.5rem;
+    border-radius: var(--oneui-r-card);
+  }
+}
+
+/* ==============================================================
+   OneUI Category Pills & Quick Filter Carousel
+   ============================================================== */
+
+.oneui-chip-carousel {
+  display: flex;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding: 0.25rem 0 1rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.oneui-chip-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.oneui-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--oneui-r-pill);
+  background: var(--oneui-surface);
+  color: var(--oneui-text-body);
+  border: 1px solid var(--oneui-border-subtle);
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: var(--oneui-shadow-subtle);
+  transition: all 0.2s var(--oneui-ease);
+  cursor: pointer;
+}
+
+.oneui-chip:hover {
+  background: var(--oneui-primary-subtle);
+  color: var(--oneui-primary);
+  border-color: var(--oneui-primary);
+  transform: translateY(-2px);
+}
+
+.oneui-chip.active {
+  background: var(--oneui-primary);
+  color: #ffffff;
+  border-color: var(--oneui-primary);
+  box-shadow: var(--oneui-shadow-glow);
+}
+
+.oneui-chip.active i {
+  color: #ffffff;
+}
+
+/* ==============================================================
+   OneUI Pebble Product Card
+   ============================================================== */
+
+.product-card,
+.oneui-card {
+  background: var(--oneui-surface);
+  border-radius: var(--oneui-r-card);
+  border: 1px solid var(--oneui-border-subtle);
+  box-shadow: var(--oneui-shadow-card);
+  transition: transform 0.25s var(--oneui-ease), box-shadow 0.25s var(--oneui-ease), border-color 0.25s var(--oneui-ease);
+  overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
-.product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--card-hover-shadow);
+.product-card:hover,
+.oneui-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--oneui-shadow-hover);
+  border-color: rgba(0, 114, 222, 0.2);
 }
 
+/* Product Card Image Container */
 .product-img-wrapper {
   position: relative;
   aspect-ratio: 1 / 1;
-  background-color: #f1f5f9;
-  border-radius: 11px 11px 0 0;
+  background: var(--oneui-surface-muted);
+  border-radius: calc(var(--oneui-r-card) - 4px) calc(var(--oneui-r-card) - 4px) 0 0;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 6px 6px 0 6px;
+  border-radius: calc(var(--oneui-r-card) - 6px);
 }
 
 .product-img-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.35s var(--oneui-ease);
 }
 
 .product-card:hover .product-img-wrapper img {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
+/* Floating Pill Discount Badge */
 .discount-badge {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color: var(--danger);
-  color: #fff;
+  top: 12px;
+  left: 12px;
+  background: var(--oneui-danger);
+  color: #ffffff;
   font-weight: 700;
   font-size: 0.75rem;
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: var(--oneui-r-pill);
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
   z-index: 2;
+  letter-spacing: 0.3px;
 }
 
+/* Floating Squircle Wishlist Button */
 .wishlist-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid var(--border-color);
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--oneui-r-pill);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--oneui-border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: var(--oneui-text-subtle);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--oneui-ease);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   z-index: 2;
 }
 
-.wishlist-btn:hover, .wishlist-btn.active {
-  color: var(--danger);
-  border-color: var(--danger);
-  background: #fff1f2;
+.wishlist-btn:hover {
+  transform: scale(1.12);
+  color: var(--oneui-danger);
+  background: #ffffff;
 }
 
-/* Typography & Prices */
+.wishlist-btn.active {
+  color: var(--oneui-danger);
+  background: var(--oneui-danger-subtle);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Typography & Price Display */
 .price-current {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  color: var(--dark);
+  color: var(--oneui-text-title);
+  letter-spacing: -0.02em;
 }
 
 .price-original {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   text-decoration: line-through;
-  color: #94a3b8;
+  color: var(--oneui-text-subtle);
   margin-left: 6px;
+  font-weight: 500;
 }
 
-/* Rating Stars */
+/* Star Rating */
 .star-rating {
   color: #f59e0b;
   display: inline-flex;
@@ -182,131 +515,370 @@ main {
   font-size: 0.88rem;
 }
 
+/* ==============================================================
+   OneUI Buttons & Form Controls
+   ============================================================== */
+
 /* Buttons */
-.btn-primary {
-  background-color: var(--primary);
-  border-color: var(--primary);
+.btn {
   font-weight: 600;
-  border-radius: 8px;
-  padding: 0.55rem 1.15rem;
-  transition: all 0.2s ease;
+  border-radius: var(--oneui-r-pill);
+  padding: 0.6rem 1.4rem;
+  transition: all 0.2s var(--oneui-ease);
+  letter-spacing: -0.01em;
 }
 
-.btn-primary:hover {
-  background-color: var(--primary-hover);
-  border-color: var(--primary-hover);
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background-color: var(--oneui-primary);
+  border-color: var(--oneui-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 114, 222, 0.2);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--oneui-primary-hover);
+  border-color: var(--oneui-primary-hover);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(0, 114, 222, 0.3);
+  transform: translateY(-1px);
 }
 
 .btn-outline-primary {
-  font-weight: 600;
-  border-radius: 8px;
+  color: var(--oneui-primary);
+  border-color: var(--oneui-primary);
+  background: transparent;
 }
 
-/* Admin Sidebar Layout */
-.admin-wrapper {
-  display: flex;
-  min-height: calc(100vh - 56px);
+.btn-outline-primary:hover {
+  background-color: var(--oneui-primary-subtle);
+  color: var(--oneui-primary);
+  border-color: var(--oneui-primary);
 }
 
-.admin-sidebar {
-  width: 250px;
-  background: #0f172a;
-  color: #f8fafc;
-  flex-shrink: 0;
-  padding-top: 1.5rem;
+.btn-sm {
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  border-radius: var(--oneui-r-pill);
 }
 
-.admin-sidebar .nav-link {
-  color: #94a3b8 !important;
-  font-weight: 500;
-  padding: 0.75rem 1.25rem;
+.btn-lg {
+  padding: 0.85rem 2rem;
+  font-size: 1.05rem;
+  border-radius: var(--oneui-r-pill);
+}
+
+/* Form Controls & Inputs */
+.form-control,
+.form-select {
+  border-radius: var(--oneui-r-md);
+  border: 1.5px solid var(--oneui-border);
+  background-color: var(--oneui-surface);
+  color: var(--oneui-text-title);
+  padding: 0.65rem 1rem;
+  font-size: 0.92rem;
+  transition: all 0.2s var(--oneui-ease);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--oneui-primary);
+  box-shadow: 0 0 0 4px rgba(0, 114, 222, 0.14);
+  background-color: #ffffff;
+}
+
+.form-control-sm,
+.form-select-sm {
+  border-radius: var(--oneui-r-sm);
+  padding: 0.45rem 0.85rem;
+  font-size: 0.85rem;
+}
+
+/* Floating Input Group */
+.input-group {
+  border-radius: var(--oneui-r-pill);
+}
+
+.input-group > .form-control:first-child,
+.input-group > .input-group-text:first-child {
+  border-top-left-radius: var(--oneui-r-pill);
+  border-bottom-left-radius: var(--oneui-r-pill);
+}
+
+.input-group > .form-control:last-child,
+.input-group > .btn:last-child,
+.input-group > .input-group-text:last-child {
+  border-top-right-radius: var(--oneui-r-pill);
+  border-bottom-right-radius: var(--oneui-r-pill);
+}
+
+/* ==============================================================
+   OneUI Squircle Feature / Stat Cards
+   ============================================================== */
+
+.oneui-squircle-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--oneui-r-squircle);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  transition: all 0.2s;
+  justify-content: center;
+  font-size: 1.6rem;
+  transition: transform 0.25s var(--oneui-ease);
 }
 
-.admin-sidebar .nav-link:hover, .admin-sidebar .nav-link.active {
-  background-color: #1e293b;
-  color: #38bdf8 !important;
-  border-left: 3px solid #38bdf8;
+.oneui-squircle-icon:hover {
+  transform: scale(1.08) rotate(2deg);
 }
 
-.admin-content {
-  flex: 1;
-  padding: 2rem;
-  background-color: #f8fafc;
-  overflow-y: auto;
-}
-
-/* Stats Cards */
 .stat-card {
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  padding: 1.5rem;
-  box-shadow: var(--card-shadow);
+  background: var(--oneui-surface);
+  border-radius: var(--oneui-r-card);
+  border: 1px solid var(--oneui-border-subtle);
+  padding: 1.6rem;
+  box-shadow: var(--oneui-shadow-card);
+  transition: all 0.25s var(--oneui-ease);
   height: 100%;
 }
 
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--oneui-shadow-hover);
+}
+
 .stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--oneui-r-squircle);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
 }
 
-/* Empty State Card */
-.empty-state {
-  text-align: center;
-  padding: 4rem 1.5rem;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px dashed var(--border-color);
+/* ==============================================================
+   OneUI Admin Layout & Sidebar
+   ============================================================== */
+
+.admin-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--oneui-canvas);
 }
 
-.empty-state-icon {
-  font-size: 3.5rem;
-  color: #cbd5e1;
-  margin-bottom: 1rem;
+.admin-sidebar {
+  width: 270px;
+  background: var(--oneui-surface);
+  border-right: 1px solid var(--oneui-border-subtle);
+  flex-shrink: 0;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Tables */
-.table-custom {
-  background: #ffffff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: var(--card-shadow);
+.admin-sidebar .brand-pill {
+  background: var(--oneui-primary-subtle);
+  border-radius: var(--oneui-r-squircle);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
-.table-custom th {
-  background-color: #f1f5f9;
+.admin-sidebar .nav-link {
+  color: var(--oneui-text-muted) !important;
+  font-weight: 600;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--oneui-r-md);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.25rem;
+  transition: all 0.2s var(--oneui-ease);
+}
+
+.admin-sidebar .nav-link i {
+  font-size: 1.2rem;
+}
+
+.admin-sidebar .nav-link:hover {
+  background-color: var(--oneui-surface-muted);
+  color: var(--oneui-primary) !important;
+  transform: translateX(3px);
+}
+
+.admin-sidebar .nav-link.active {
+  background-color: var(--oneui-primary);
+  color: #ffffff !important;
+  box-shadow: var(--oneui-shadow-glow);
   font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-  color: #475569;
-  padding: 12px 16px;
 }
 
-.table-custom td {
-  padding: 14px 16px;
-  vertical-align: middle;
+.admin-sidebar .nav-link.active i {
+  color: #ffffff;
 }
 
-/* Responsive adjustments */
+.admin-content {
+  flex: 1;
+  padding: 2.25rem 2.5rem;
+  background-color: var(--oneui-canvas);
+  overflow-y: auto;
+}
+
 @media (max-width: 991.98px) {
   .admin-wrapper {
     flex-direction: column;
   }
   .admin-sidebar {
     width: 100%;
-    padding: 0.5rem;
-  }
-  .admin-content {
     padding: 1rem;
   }
+  .admin-content {
+    padding: 1.25rem;
+  }
 }
+
+/* ==============================================================
+   OneUI Badges, Chips & Alerts
+   ============================================================== */
+
+.badge {
+  font-weight: 600;
+  border-radius: var(--oneui-r-pill);
+  padding: 0.4rem 0.85rem;
+  letter-spacing: 0.01em;
+}
+
+/* Subtle Semantic Badges */
+.bg-primary-subtle {
+  background-color: var(--oneui-primary-subtle) !important;
+  color: var(--oneui-primary) !important;
+}
+
+.bg-success-subtle {
+  background-color: var(--oneui-success-subtle) !important;
+  color: var(--oneui-success) !important;
+}
+
+.bg-warning-subtle {
+  background-color: var(--oneui-warning-subtle) !important;
+  color: #b45309 !important;
+}
+
+.bg-danger-subtle {
+  background-color: var(--oneui-danger-subtle) !important;
+  color: var(--oneui-danger) !important;
+}
+
+.bg-info-subtle {
+  background-color: var(--oneui-info-subtle) !important;
+  color: var(--oneui-info) !important;
+}
+
+/* OneUI Alerts */
+.alert {
+  border-radius: var(--oneui-r-md);
+  border: 1px solid transparent;
+  padding: 0.9rem 1.25rem;
+}
+
+/* ==============================================================
+   OneUI Modern Tables
+   ============================================================== */
+
+.table-responsive {
+  border-radius: var(--oneui-r-card);
+}
+
+.table-custom,
+.table {
+  background: var(--oneui-surface);
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background-color: var(--oneui-surface-muted);
+  color: var(--oneui-text-muted);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--oneui-border-subtle);
+}
+
+.table thead th:first-child {
+  border-top-left-radius: var(--oneui-r-card);
+}
+
+.table thead th:last-child {
+  border-top-right-radius: var(--oneui-r-card);
+}
+
+.table tbody td {
+  padding: 1rem 1.25rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--oneui-border-subtle);
+  color: var(--oneui-text-body);
+}
+
+.table-hover tbody tr:hover {
+  background-color: var(--oneui-surface-muted);
+}
+
+/* ==============================================================
+   OneUI Modals & Dialogs
+   ============================================================== */
+
+.modal-content {
+  border-radius: var(--oneui-r-hero);
+  border: 1px solid var(--oneui-border-subtle);
+  box-shadow: var(--oneui-shadow-modal);
+  overflow: hidden;
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--oneui-border-subtle);
+  padding: 1.5rem 1.75rem;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--oneui-border-subtle);
+  padding: 1.25rem 1.75rem;
+}
+
+/* ==============================================================
+   OneUI Selectable Option Cards (Address & Payment Methods)
+   ============================================================== */
+
+.selectable-option-card {
+  background: var(--oneui-surface);
+  border: 2px solid var(--oneui-border);
+  border-radius: var(--oneui-r-squircle);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s var(--oneui-ease);
+}
+
+.selectable-option-card:hover {
+  border-color: rgba(0, 114, 222, 0.4);
+  transform: translateY(-2px);
+}
+
+.selectable-option-card.selected {
+  border-color: var(--oneui-primary);
+  background-color: var(--oneui-primary-subtle);
+  box-shadow: 0 4px 16px rgba(0, 114, 222, 0.12);
+}
+
+/* Responsive mobile bottom clearance for OneUI bottom nav */
+@media (max-width: 767.98px) {
+  body {
+    padding-bottom: 75px !important;
+  }
+}
+

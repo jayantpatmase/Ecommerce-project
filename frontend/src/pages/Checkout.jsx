@@ -137,7 +137,7 @@ export default function Checkout() {
             {/* Left Column: Delivery Details & Payment */}
             <div className="col-lg-7">
               {/* 1. Contact Information */}
-              <div className="card border-0 shadow-sm rounded-3 p-4 bg-white mb-4">
+              <div className="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
                 <h5 className="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
                   <i className="bi bi-person-check text-primary"></i> 1. Contact Information
                 </h5>
@@ -170,7 +170,7 @@ export default function Checkout() {
               </div>
 
               {/* 2. Indian Delivery Address */}
-              <div className="card border-0 shadow-sm rounded-3 p-4 bg-white mb-4">
+              <div className="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
                 <h5 className="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
                   <i className="bi bi-geo-alt text-primary"></i> 2. Delivery Address (India)
                 </h5>
@@ -257,7 +257,7 @@ export default function Checkout() {
               </div>
 
               {/* 3. Indian Payment Methods */}
-              <div className="card border-0 shadow-sm rounded-3 p-4 bg-white">
+              <div className="card border-0 shadow-sm rounded-4 p-4 bg-white">
                 <h5 className="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
                   <i className="bi bi-wallet2 text-primary"></i> 3. Payment Method
                 </h5>
@@ -265,7 +265,7 @@ export default function Checkout() {
                 <div className="d-flex flex-column gap-3">
                   {/* Option 1: UPI */}
                   <div
-                    className={`p-3 border rounded-3 cursor-pointer d-flex align-items-center justify-content-between ${
+                    className={`p-3 border rounded-4 cursor-pointer d-flex align-items-center justify-content-between ${
                       paymentMethod.startsWith('UPI') ? 'border-primary bg-primary-subtle' : 'bg-light'
                     }`}
                     onClick={() => setPaymentMethod('UPI (Google Pay / PhonePe / Paytm / BHIM)')}
@@ -312,7 +312,7 @@ export default function Checkout() {
 
                   {/* Option 2: Cash on Delivery */}
                   <div
-                    className={`p-3 border rounded-3 cursor-pointer d-flex align-items-center justify-content-between ${
+                    className={`p-3 border rounded-4 cursor-pointer d-flex align-items-center justify-content-between ${
                       paymentMethod === 'Cash on Delivery' ? 'border-primary bg-primary-subtle' : 'bg-light'
                     }`}
                     onClick={() => setPaymentMethod('Cash on Delivery')}
@@ -336,7 +336,7 @@ export default function Checkout() {
 
                   {/* Option 3: RuPay / Credit / Debit Cards */}
                   <div
-                    className={`p-3 border rounded-3 cursor-pointer d-flex align-items-center justify-content-between ${
+                    className={`p-3 border rounded-4 cursor-pointer d-flex align-items-center justify-content-between ${
                       paymentMethod === 'Credit/Debit Card (RuPay/Visa/Mastercard)' ? 'border-primary bg-primary-subtle' : 'bg-light'
                     }`}
                     onClick={() => setPaymentMethod('Credit/Debit Card (RuPay/Visa/Mastercard)')}
@@ -360,7 +360,7 @@ export default function Checkout() {
 
                   {/* Option 4: Net Banking */}
                   <div
-                    className={`p-3 border rounded-3 cursor-pointer d-flex align-items-center justify-content-between ${
+                    className={`p-3 border rounded-4 cursor-pointer d-flex align-items-center justify-content-between ${
                       paymentMethod === 'Net Banking' ? 'border-primary bg-primary-subtle' : 'bg-light'
                     }`}
                     onClick={() => setPaymentMethod('Net Banking')}
@@ -387,14 +387,14 @@ export default function Checkout() {
 
             {/* Right Column: Order Summary */}
             <div className="col-lg-5">
-              <div className="card border-0 shadow-sm rounded-3 p-4 bg-white sticky-top" style={{ top: '90px' }}>
+              <div className="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style={{ top: '90px' }}>
                 <h5 className="fw-bold text-dark mb-3 pb-2 border-bottom">Order Items ({items.length})</h5>
 
                 <div className="overflow-auto mb-3" style={{ maxHeight: '250px' }}>
                   {items.map((it) => (
                     <div key={it.cart_id} className="d-flex align-items-center justify-content-between py-2 border-bottom">
                       <div className="d-flex align-items-center gap-2">
-                        <div style={{ width: '40px', height: '40px' }} className="rounded bg-light overflow-hidden border">
+                        <div style={{ width: '40px', height: '40px' }} className="rounded-3 bg-light overflow-hidden border">
                           <img
                             src={it.image || '/uploads/products/placeholder.svg'}
                             alt=""
@@ -435,7 +435,7 @@ export default function Checkout() {
 
                 <button
                   type="submit"
-                  className="btn btn-primary btn-lg w-100 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
+                  className="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
                   disabled={processing}
                 >
                   {processing ? (

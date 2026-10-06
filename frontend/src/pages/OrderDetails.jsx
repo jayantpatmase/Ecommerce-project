@@ -125,7 +125,7 @@ export default function OrderDetails() {
         </div>
 
         {/* Order Header Summary */}
-        <div className="card border-0 shadow-sm rounded-3 p-4 bg-white mb-4">
+        <div className="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 pb-3 border-bottom mb-3">
             <div>
               <h3 className="fw-bold text-dark mb-1">Order #{order.id}</h3>
@@ -176,7 +176,7 @@ export default function OrderDetails() {
         </div>
 
         {/* Ordered Items Table */}
-        <div className="card border-0 shadow-sm rounded-3 overflow-hidden bg-white mb-4">
+        <div className="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
           <div className="p-4 border-bottom">
             <h5 className="fw-bold text-dark mb-0">Order Items</h5>
           </div>

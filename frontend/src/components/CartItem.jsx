@@ -6,7 +6,7 @@ export default function CartItem({ item, onQuantityChange, onRemove, updating = 
   const isOutOfStock = !item.is_available;
 
   return (
-    <div className="card border-0 shadow-sm rounded-3 p-3 mb-3 bg-white">
+    <div className="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white">
       <div className="row align-items-center g-3">
         {/* Product image */}
         <div className="col-3 col-sm-2">
