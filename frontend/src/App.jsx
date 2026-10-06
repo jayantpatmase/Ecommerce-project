@@ -5,7 +5,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import GalaxyLayout from './components/GalaxyLayout';
-import { OneUIThemeProvider } from './context/OneUIThemeContext';
 
 // Customer Pages
 import Home from './pages/Home';
@@ -35,55 +34,53 @@ import AdminInventory from './admin/AdminInventory';
 export default function App() {
   return (
     <ErrorBoundary>
-      <OneUIThemeProvider>
-        <div className="d-flex flex-column min-vh-100">
-          <Routes>
-            {/* Admin Protected Routes with dedicated AdminLayout */}
-            <Route
-              path="/admin"
-              element={
-                <AdminProtectedRoute>
-                  <AdminLayout />
-                </AdminProtectedRoute>
-              }
-            >
-              <Route index element={<AdminDashboard />} />
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="products/add" element={<AdminProductForm />} />
-              <Route path="products/edit/:id" element={<AdminProductForm />} />
-              <Route path="categories" element={<AdminCategories />} />
-              <Route path="customers" element={<AdminCustomers />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="orders/:id" element={<AdminOrderDetails />} />
-              <Route path="inventory" element={<AdminInventory />} />
-            </Route>
+      <div className="d-flex flex-column min-vh-100">
+        <Routes>
+          {/* Admin Protected Routes with dedicated AdminLayout */}
+          <Route
+            path="/admin"
+            element={
+              <AdminProtectedRoute>
+                <AdminLayout />
+              </AdminProtectedRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="products/add" element={<AdminProductForm />} />
+            <Route path="products/edit/:id" element={<AdminProductForm />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="customers" element={<AdminCustomers />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="orders/:id" element={<AdminOrderDetails />} />
+            <Route path="inventory" element={<AdminInventory />} />
+          </Route>
 
-            {/* Customer Facing Storefront Routes wrapped in Samsung Galaxy One UI Layout */}
-            <Route
-              path="/*"
-              element={
-                <GalaxyLayout>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/products" element={<Products />} />
-                    <Route path="/products/:id" element={<ProductDetails />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/wishlist" element={<Wishlist />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/order-success" element={<OrderSuccess />} />
-                    <Route path="/orders" element={<Orders />} />
-                    <Route path="/orders/:id" element={<OrderDetails />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </GalaxyLayout>
-              }
-            />
-          </Routes>
-        </div>
-      </OneUIThemeProvider>
+          {/* Customer Facing Storefront Routes wrapped in Samsung One UI Layout */}
+          <Route
+            path="/*"
+            element={
+              <GalaxyLayout>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/products" element={<Products />} />
+                  <Route path="/products/:id" element={<ProductDetails />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/wishlist" element={<Wishlist />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/order-success" element={<OrderSuccess />} />
+                  <Route path="/orders" element={<Orders />} />
+                  <Route path="/orders/:id" element={<OrderDetails />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </GalaxyLayout>
+            }
+          />
+        </Routes>
+      </div>
     </ErrorBoundary>
   );
 }

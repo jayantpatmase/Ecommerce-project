@@ -52,10 +52,10 @@ export default function Home() {
   ];
 
   return (
-    <div className="pb-4">
+    <div className="container py-3">
       {/* 1. Samsung One UI Glance & Weather Widget */}
-      <section className="px-3 pt-3 pb-2">
-        <div className="card border-0 rounded-4 p-3 bg-white shadow-sm mb-3">
+      <section className="mb-3">
+        <div className="card border-0 rounded-4 p-3 bg-white shadow-sm">
           <div className="d-flex justify-content-between align-items-center">
             <div>
               <div className="text-muted small fw-semibold" style={{ fontSize: '0.78rem' }}>
@@ -77,7 +77,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="px-3">
+      <div>
         {/* 2. Samsung Galaxy Store App Icons (Squircle Category Grid) */}
         <section className="card border-0 rounded-4 p-3 bg-white shadow-sm mb-4">
           <div className="d-flex justify-content-between align-items-center mb-3 px-1">

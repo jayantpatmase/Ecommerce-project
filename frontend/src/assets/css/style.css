@@ -883,139 +883,27 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==============================================================
-   Samsung Galaxy Mobile Phone Frame & One UI Mobile Theme
+   Samsung One UI Mobile Theme (Fluid Responsive Design)
+   - Zero fixed phone frames: adapts fluidly to desktop, tablet, and mobile
+   - Samsung One UI fluid squircle geometry (border-radius: 24px - 28px)
+   - One UI Sapphire Blue (#0072de) & porcelain canvas (#f2f4f8)
+   - Galaxy Store style squircle app icons
+   - Galaxy Settings style grouped cards
+   - Mobile-optimized thumb reachability bottom navigation
    ============================================================== */
 
-/* Desktop Stage containing the Samsung Galaxy S24 frame */
-.galaxy-desktop-stage {
-  min-height: 100vh;
-  background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 1.5rem 1rem 3rem;
-  box-sizing: border-box;
-}
-
-.galaxy-stage-toolbar {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: var(--oneui-r-pill);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  margin-bottom: 1.5rem;
-  width: 100%;
-  max-width: 680px;
-}
-
-.galaxy-phone-wrapper {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Authentic Samsung Galaxy S24 Ultra Chassis */
-.galaxy-phone-chassis {
-  position: relative;
-  width: 440px;
-  height: 890px;
-  max-height: 92vh;
-  background: #14171d;
-  border-radius: 52px;
-  border: 11px solid #2b313a;
-  box-shadow:
-    0 30px 90px -15px rgba(0, 0, 0, 0.75),
-    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
-    0 0 20px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* Physical Hardware Buttons on Right Side of Chassis */
-.galaxy-hardware-btn {
-  position: absolute;
-  right: -15px;
-  width: 4px;
-  background: #3c4452;
-  border-radius: 3px;
-  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.5);
-}
-
-.galaxy-btn-volume-up {
-  top: 170px;
-  height: 48px;
-}
-
-.galaxy-btn-volume-down {
-  top: 230px;
-  height: 48px;
-}
-
-.galaxy-btn-power {
-  top: 310px;
-  height: 60px;
-}
-
-/* Galaxy AMOLED Screen */
-.galaxy-phone-screen {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  border-radius: 40px;
-  background: var(--oneui-canvas);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-/* Galaxy Status Bar */
-.galaxy-status-bar {
-  height: 38px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  z-index: 1050;
-  flex-shrink: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
-}
-
-.galaxy-camera-hole {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #000000;
-  box-shadow: 0 0 0 1.5px #181d24;
-}
-
-/* Inner Mobile Content Scrolling Container */
-.galaxy-scroll-content {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-}
-
-.galaxy-scroll-content::-webkit-scrollbar {
-  width: 4px;
-}
-
-.galaxy-scroll-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
-}
-
-/* Galaxy Bottom Navigation Bar */
+/* Galaxy Bottom Navigation Bar (Fixed on mobile viewports) */
 .galaxy-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--oneui-border-subtle);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
   z-index: 1040;
-  flex-shrink: 0;
 }
 
 .galaxy-nav-tab {
