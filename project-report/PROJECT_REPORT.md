@@ -160,6 +160,114 @@ graph TD
     P5 <--> D2
 ```
 
+### 5.4 Detailed System Workflows
+
+#### 5.4.1 Customer Workflow
+```mermaid
+flowchart TD
+    Home[Storefront Home] --> Browse[Browse & Search Products]
+    Browse --> Filter[Filter by Category / Price / Rating]
+    Filter --> Details[Product Details & Reviews]
+    Details --> Wishlist[Add to Wishlist]
+    Details --> Cart[Add to Cart]
+    Wishlist -->|Move to Cart| Cart
+    Cart --> Checkout[Checkout Page]
+    Checkout --> Address[Enter Shipping Address]
+    Address --> PaymentMethod[Select Payment Method]
+    PaymentMethod --> PlaceOrder[Place Order]
+    PlaceOrder --> Success[Order Confirmation & Invoice]
+    Success --> OrderHistory[View Order History]
+    OrderHistory --> Cancel[Cancel Eligible Pending Order]
+    OrderHistory --> WriteReview[Submit Product Review]
+```
+
+#### 5.4.2 Admin Workflow
+```mermaid
+flowchart TD
+    AdminLogin[Admin Login] --> Dashboard[Admin Dashboard KPIs]
+    Dashboard --> ProductMgmt[Product Management CRUD]
+    Dashboard --> CategoryMgmt[Category Management]
+    Dashboard --> CustomerMgmt[Customer Management]
+    Dashboard --> InventoryMgmt[Inventory Stock Monitor]
+    Dashboard --> OrderMgmt[Order Management]
+    ProductMgmt --> AddProduct[Add / Edit / Disable Products]
+    OrderMgmt --> ViewOrder[View Order Details & Line Items]
+    ViewOrder --> UpdateStatus[Update Fulfillment Status]
+    UpdateStatus --> Restock[Restock Products on Cancellation]
+```
+
+#### 5.4.3 Authentication Workflow
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant React as React Frontend (AuthContext)
+    participant AuthAPI as PHP Auth API
+    participant DB as MySQL Database
+
+    User->>React: Enters credentials (Email, Password)
+    React->>AuthAPI: POST /api/auth/login.php
+    AuthAPI->>DB: SELECT id, password, role, status FROM users WHERE email = ?
+    alt User Not Found or Inactive
+        AuthAPI-->>React: 401 Unauthorized / 403 Forbidden
+    else User Valid
+        AuthAPI->>AuthAPI: password_verify(password, hash)
+        alt Password Invalid
+            AuthAPI-->>React: 401 Invalid credentials
+        else Password Matches
+            AuthAPI->>AuthAPI: session_regenerate_id(true)
+            AuthAPI->>AuthAPI: Store user_id, role in $_SESSION
+            AuthAPI-->>React: 200 OK (User object + Session Cookie)
+            React-->>User: Update state & redirect (Dashboard/Home)
+        end
+    end
+```
+
+#### 5.4.4 Order Transaction Workflow (ACID Sequence)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Customer
+    participant React as React Frontend
+    participant OrderAPI as PHP Order API
+    participant DB as MySQL Database
+    participant Email as Notification Service
+
+    Customer->>React: Submit Order (Address, Payment Method)
+    React->>OrderAPI: POST /api/orders/create.php
+    Note over OrderAPI,DB: START TRANSACTION
+    OrderAPI->>DB: SELECT * FROM cart WHERE user_id = ? FOR UPDATE
+    OrderAPI->>DB: SELECT stock, price, discount FROM products FOR UPDATE
+    alt Insufficient Stock
+        OrderAPI-->>React: 400 Insufficient Stock
+        Note over OrderAPI,DB: ROLLBACK
+    else Stock Available
+        OrderAPI->>DB: INSERT INTO orders (total_amount, status)
+        OrderAPI->>DB: INSERT INTO order_items (historical purchase price)
+        OrderAPI->>DB: UPDATE products SET stock = stock - qty
+        OrderAPI->>DB: DELETE FROM cart WHERE user_id = ?
+        OrderAPI->>DB: INSERT INTO payments / invoices
+        Note over OrderAPI,DB: COMMIT TRANSACTION
+        OrderAPI->>Email: Log & Dispatch Order Confirmation Email
+        OrderAPI-->>React: 201 Created (Order ID, Invoice)
+    end
+```
+
+#### 5.4.5 Payment Workflow
+```mermaid
+flowchart TD
+    OrderCreated[Order Created with Total] --> SelectMethod{Payment Method}
+    SelectMethod -->|Cash on Delivery| COD[Set Payment Status: pending, Order Status: confirmed]
+    SelectMethod -->|Online Payment| Online[Generate Transaction Reference]
+    COD --> DeliverCOD[Order Delivered]
+    DeliverCOD --> MarkPaid[Set Payment Status: paid]
+    Online --> VerifyGateway[Server-Side Payment Verification]
+    VerifyGateway -->|Payment Verified| ConfirmOnline[Set Payment Status: paid, Order Status: confirmed]
+    VerifyGateway -->|Verification Failed| FailOnline[Set Payment Status: failed]
+    ConfirmOnline --> GenInvoice[Generate Official Order Invoice]
+    MarkPaid --> GenInvoice
+```
+
 ---
 
 ## CHAPTER 6 — DATABASE DESIGN & ER MODELING
