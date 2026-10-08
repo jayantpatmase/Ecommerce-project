@@ -5,9 +5,10 @@
 
 export function formatPrice(amount) {
   const num = Number(amount) || 0;
+  const isFractional = Math.abs(num - Math.round(num)) > 0.001;
   return '₹' + num.toLocaleString('en-IN', {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 0
+    minimumFractionDigits: isFractional ? 2 : 0,
+    maximumFractionDigits: 2
   });
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -26,7 +26,7 @@ export default function ProductDetails() {
   const [wishlisted, setWishlisted] = useState(false);
 
   // Gallery multi-angle thumbnails & Lightbox
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedAngleIdx, setSelectedAngleIdx] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
 
@@ -35,7 +35,7 @@ export default function ProductDetails() {
 
   // Variants selection (Amazon / Flipkart / Myntra style)
   const [selectedColor, setSelectedColor] = useState('Phantom Black');
-  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedVariant, setSelectedVariant] = useState(null);
   const [showSizeModal, setShowSizeModal] = useState(false);
 
   // Delivery Pincode checker
@@ -95,6 +95,143 @@ export default function ProductDetails() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Compute category-specific and product-specific variants with dynamic pricing
+  const variantConfig = useMemo(() => {
+    if (!product) return null;
+    const name = (product.name || '').toLowerCase();
+    const cat = (product.category_name || '').toLowerCase();
+
+    // 1. Smartwatches & Wearables (Smart Fitness Watch Series 9)
+    if (name.includes('watch') || name.includes('fitness')) {
+      return {
+        label: 'Storage & Connectivity Edition:',
+        isStorage: true,
+        options: [
+          { name: '128 GB (GPS)', priceOffset: 0, badge: 'Standard' },
+          { name: '256 GB (GPS)', priceOffset: 600, badge: 'Most Popular' },
+          { name: '512 GB (Cellular LTE)', priceOffset: 1400, badge: '4G Calling' },
+          { name: '1 TB (Titanium Pro)', priceOffset: 2600, badge: 'Flagship' }
+        ]
+      };
+    }
+
+    // 2. Laptops & Computers
+    if (name.includes('laptop') || name.includes('ultrabook')) {
+      return {
+        label: 'Configuration (RAM & NVMe SSD):',
+        isStorage: true,
+        options: [
+          { name: '16GB / 512GB SSD', priceOffset: -5000, badge: 'Value' },
+          { name: '16GB / 1TB NVMe', priceOffset: 0, badge: 'Recommended' },
+          { name: '32GB / 2TB NVMe', priceOffset: 12000, badge: 'Max Power' }
+        ]
+      };
+    }
+
+    // 3. Audio & Headphones
+    if (name.includes('headphone') || name.includes('audio') || cat.includes('audio')) {
+      return {
+        label: 'Edition & Package:',
+        options: [
+          { name: 'Standard Wireless', priceOffset: 0, badge: 'Base' },
+          { name: 'Pro Edition + Hard Case', priceOffset: 450, badge: '+₹450' },
+          { name: 'Audiophile Bundle (DAC + Cable)', priceOffset: 950, badge: '+₹950' }
+        ]
+      };
+    }
+
+    // 4. Mechanical Keyboards
+    if (name.includes('keyboard')) {
+      return {
+        label: 'Mechanical Switch Type:',
+        options: [
+          { name: 'Red Linear (Silent)', priceOffset: 0, badge: 'Smooth' },
+          { name: 'Brown Tactile (Quiet)', priceOffset: 150, badge: 'Balanced' },
+          { name: 'Blue Clicky (Audible)', priceOffset: 150, badge: 'Tactile' }
+        ]
+      };
+    }
+
+    // 5. Fashion & Clothing (Shirts, Jackets, Jeans)
+    if (cat.includes('clothing') || name.includes('shirt') || name.includes('jacket') || name.includes('jeans')) {
+      return {
+        label: 'Select Size:',
+        showSizeChart: true,
+        options: [
+          { name: 'S', priceOffset: 0, badge: 'Slim' },
+          { name: 'M', priceOffset: 0, badge: 'Regular' },
+          { name: 'L', priceOffset: 0, badge: 'Comfort' },
+          { name: 'XL', priceOffset: 50, badge: '+₹50' },
+          { name: 'XXL', priceOffset: 100, badge: '+₹100' }
+        ]
+      };
+    }
+
+    // 6. Footwear & Shoes
+    if (cat.includes('shoe') || name.includes('shoe') || name.includes('derby')) {
+      return {
+        label: 'UK / India Shoe Size:',
+        showSizeChart: true,
+        options: [
+          { name: 'UK 7', priceOffset: 0, badge: 'Standard' },
+          { name: 'UK 8', priceOffset: 0, badge: 'Popular' },
+          { name: 'UK 9', priceOffset: 0, badge: 'Standard' },
+          { name: 'UK 10', priceOffset: 100, badge: '+₹100' },
+          { name: 'UK 11', priceOffset: 150, badge: '+₹150' }
+        ]
+      };
+    }
+
+    // 7. Kitchen & Home Appliances
+    if (cat.includes('home') || cat.includes('kitchen') || name.includes('espresso') || name.includes('oven')) {
+      if (name.includes('espresso')) {
+        return {
+          label: 'Boiler Setup:',
+          options: [
+            { name: 'Single Boiler (Classic)', priceOffset: 0, badge: 'Standard' },
+            { name: 'Dual Boiler (Barista Touch)', priceOffset: 2500, badge: '+₹2,500' }
+          ]
+        };
+      }
+      return {
+        label: 'Capacity / Size:',
+        options: [
+          { name: '4-Quart (Small)', priceOffset: -300, badge: 'Compact' },
+          { name: '6-Quart (Family)', priceOffset: 0, badge: 'Standard' },
+          { name: '8-Quart (Jumbo Party)', priceOffset: 500, badge: 'Large' }
+        ]
+      };
+    }
+
+    // 8. Books
+    if (cat.includes('book') || name.includes('book') || name.includes('guide')) {
+      return {
+        label: 'Format & Binding:',
+        options: [
+          { name: 'Paperback Edition', priceOffset: 0, badge: 'Paperback' },
+          { name: 'Hardcover Collector', priceOffset: 200, badge: 'Hardcover' },
+          { name: 'Deluxe Signed Boxset', priceOffset: 500, badge: 'Boxset' }
+        ]
+      };
+    }
+
+    // General fallback
+    return {
+      label: 'Package Option:',
+      options: [
+        { name: 'Standard Pack (1 Unit)', priceOffset: 0, badge: 'Single' },
+        { name: 'Value Combo (2 Units)', priceOffset: Math.round(Number(product.price) * 0.85), badge: 'Save 15%' }
+      ]
+    };
+  }, [product]);
+
+  // Set default variant when product loads
+  useEffect(() => {
+    if (variantConfig && variantConfig.options && variantConfig.options.length > 0) {
+      setSelectedVariant(variantConfig.options[0].name);
+    }
+  }, [variantConfig]);
+
   useEffect(() => {
     const loadDetails = async () => {
       try {
@@ -110,13 +247,6 @@ export default function ProductDetails() {
         if (prodRes.success) {
           const p = prodRes.data;
           setProduct(p);
-          setSelectedImage(p.image || '/uploads/products/placeholder.svg');
-
-          // Determine initial size/variant
-          const isTech = ['electronics', 'appliances', 'mobiles'].some((c) =>
-            (p.category_name || '').toLowerCase().includes(c)
-          );
-          setSelectedSize(isTech ? '256 GB' : 'M');
 
           // Save to Recently Viewed in localStorage
           try {
@@ -153,6 +283,25 @@ export default function ProductDetails() {
 
     if (id) loadDetails();
   }, [id]);
+
+  // DYNAMIC PRICING CALCULATION ACCORDING TO SELECTED VARIANT
+  const activeVariantOption = useMemo(() => {
+    if (!variantConfig || !variantConfig.options) return null;
+    return (
+      variantConfig.options.find((opt) => opt.name === selectedVariant) ||
+      variantConfig.options[0]
+    );
+  }, [variantConfig, selectedVariant]);
+
+  const variantOffset = activeVariantOption ? activeVariantOption.priceOffset : 0;
+  const baseOriginalPrice = product ? Number(product.price) : 0;
+  const discountRate = product && Number(product.discount) > 0 ? Number(product.discount) / 100 : 0;
+
+  // Dynamically calculated original M.R.P. and final discounted price
+  const effectiveOriginalPrice = Math.max(99, Math.round(baseOriginalPrice + variantOffset));
+  const effectiveFinalPrice = discountRate > 0
+    ? Math.max(99, Math.round(effectiveOriginalPrice * (1 - discountRate)))
+    : effectiveOriginalPrice;
 
   const handleCheckPincode = (e) => {
     e?.preventDefault();
@@ -195,10 +344,13 @@ export default function ProductDetails() {
       await api.addToCart(product.id, quantity);
       await refreshCounts();
       if (buyNow) {
-        showToast(`Proceeding to checkout with ${product.name}...`, 'primary');
+        showToast(`Proceeding to checkout with ${product.name} (${selectedVariant || 'Standard'})...`, 'primary');
         navigate('/checkout');
       } else {
-        showToast(`Added ${quantity} unit(s) of "${product.name}" (${selectedColor}, ${selectedSize}) to your cart!`, 'success');
+        showToast(
+          `Added ${quantity} unit(s) of "${product.name}" (${selectedColor}, ${selectedVariant || 'Standard'} • ${formatPrice(effectiveFinalPrice)}) to your cart!`,
+          'success'
+        );
       }
     } catch (err) {
       showToast(err.message || 'Could not add to cart.', 'danger');
@@ -223,7 +375,7 @@ export default function ProductDetails() {
       await refreshCounts();
       showToast(
         bundleIncludeSecondary
-          ? `Bundle added! "${product.name}" + "${bundleItem.name}" added to cart.`
+          ? `Bundle added! "${product.name}" (${selectedVariant}) + "${bundleItem.name}" added to cart.`
           : `Added "${product.name}" to cart.`,
         'success'
       );
@@ -284,37 +436,33 @@ export default function ProductDetails() {
 
   const isOutOfStock = Number(product.stock) <= 0;
   const hasDiscount  = Number(product.discount) > 0;
-  const isTechCategory = ['electronics', 'appliances', 'mobiles', 'audio', 'laptop'].some((c) =>
-    (product.category_name || '').toLowerCase().includes(c)
-  );
 
   // Dynamic gallery angles (Multi-Angle Switcher)
   const mainImg = product.image || '/uploads/products/placeholder.svg';
   const galleryAngles = [
-    { label: 'Front View', url: mainImg },
-    { label: 'Side Angle', url: mainImg },
-    { label: 'Packaging', url: mainImg },
-    { label: 'Macro Detail', url: mainImg }
+    { label: 'Front Display View', icon: 'bi-aspect-ratio', url: mainImg },
+    { label: 'Side Profile & Dial', icon: 'bi-phone-landscape', url: mainImg },
+    { label: 'In-Hand / Wrist View', icon: 'bi-hand-index-thumb', url: mainImg },
+    { label: 'Packaging & Box', icon: 'bi-box-seam', url: mainImg }
   ];
 
-  // Available variant options
+  // Color options
   const colorOptions = [
-    { name: 'Phantom Black', hex: '#1e1e1e' },
-    { name: 'Mystic Silver', hex: '#d1d5db' },
-    { name: 'Sapphire Blue', hex: '#0072de' },
-    { name: 'Rose Titanium', hex: '#c59b9b' }
+    { name: 'Phantom Black', hex: '#1e1e1e', ring: '#000000' },
+    { name: 'Mystic Silver', hex: '#d1d5db', ring: '#9ca3af' },
+    { name: 'Sapphire Blue', hex: '#0072de', ring: '#0072de' },
+    { name: 'Rose Titanium', hex: '#c59b9b', ring: '#b76e79' }
   ];
 
-  const sizeOptions = isTechCategory
-    ? ['128 GB', '256 GB', '512 GB', '1 TB']
-    : ['S', 'M', 'L', 'XL', 'XXL'];
+  // Active image based on selected angle
+  const activeDisplayImg = galleryAngles[selectedAngleIdx]?.url || mainImg;
 
   // Bundle Item (Companion from related products)
   const bundleCompanion = related.length > 0 ? related[0] : null;
   const bundleSavings = bundleCompanion ? Math.round(bundleCompanion.final_price * 0.1) : 0;
   const bundleTotalPrice = bundleCompanion
-    ? Math.round((product.final_price + (bundleIncludeSecondary ? bundleCompanion.final_price - bundleSavings : 0)) * 100) / 100
-    : product.final_price;
+    ? Math.round((effectiveFinalPrice + (bundleIncludeSecondary ? bundleCompanion.final_price - bundleSavings : 0)) * 100) / 100
+    : effectiveFinalPrice;
 
   // Filter Q&A
   const filteredQa = qaList.filter(
@@ -370,23 +518,43 @@ export default function ProductDetails() {
             <div className="card border-0 shadow-sm rounded-4 overflow-hidden p-3 bg-white sticky-top" style={{ top: '90px' }}>
               {/* Main Active Image with Zoom Feel */}
               <div
-                className="ratio ratio-1x1 bg-light rounded-4 overflow-hidden d-flex align-items-center justify-content-center position-relative mb-3 border"
-                style={{ cursor: 'zoom-in' }}
+                className="ratio ratio-1x1 rounded-4 overflow-hidden d-flex align-items-center justify-content-center position-relative mb-3 border shadow-inner"
+                style={{
+                  cursor: 'zoom-in',
+                  backgroundColor: '#f8fafc',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+                }}
                 onClick={() => setLightboxOpen(true)}
                 title="Click to Zoom Fullscreen"
               >
                 <img
-                  src={selectedImage || mainImg}
+                  src={activeDisplayImg}
                   alt={product.name}
                   className="object-fit-contain p-4 w-100 h-100 transition-all"
-                  style={{ transition: 'transform 0.3s ease' }}
+                  style={{
+                    filter: selectedColor === 'Phantom Black'
+                      ? 'contrast(1.08)'
+                      : selectedColor === 'Mystic Silver'
+                      ? 'brightness(1.15) contrast(0.95)'
+                      : selectedColor === 'Sapphire Blue'
+                      ? 'hue-rotate(180deg) saturate(1.2)'
+                      : 'hue-rotate(310deg) saturate(1.1)',
+                    transition: 'filter 0.3s ease, transform 0.3s ease'
+                  }}
                   onError={(e) => { e.target.src = '/uploads/products/placeholder.svg'; }}
                 />
-                <span className="position-absolute bottom-0 start-0 m-3 badge bg-white text-secondary border shadow-sm rounded-pill px-3 py-2 small">
-                  <i className="bi bi-arrows-fullscreen me-1 text-primary"></i> Click to Zoom (360° Inspect)
+
+                {/* Perspective angle tag */}
+                <span className="position-absolute top-0 start-0 m-3 badge bg-dark bg-opacity-75 text-white rounded-pill px-3 py-1 small">
+                  {galleryAngles[selectedAngleIdx]?.label}
                 </span>
+
+                <span className="position-absolute bottom-0 start-0 m-3 badge bg-white text-secondary border shadow-sm rounded-pill px-3 py-2 small">
+                  <i className="bi bi-arrows-fullscreen me-1 text-primary"></i> 360° Lightbox Zoom
+                </span>
+
                 {hasDiscount && (
-                  <span className="position-absolute top-0 start-0 m-3 badge bg-danger text-white rounded-pill px-3 py-2 fw-bold shadow-sm">
+                  <span className="position-absolute top-0 end-0 m-3 badge bg-danger text-white rounded-pill px-3 py-2 fw-bold shadow-sm">
                     {Number(product.discount)}% OFF
                   </span>
                 )}
@@ -395,27 +563,27 @@ export default function ProductDetails() {
               {/* Angle Thumbnails Carousel / Selector */}
               <div className="d-flex gap-2 justify-content-center">
                 {galleryAngles.map((angle, idx) => {
-                  const isCur = selectedImage === angle.url && idx === 0;
+                  const isCur = selectedAngleIdx === idx;
                   return (
                     <button
                       key={idx}
                       type="button"
-                      onClick={() => setSelectedImage(angle.url)}
-                      className={`btn p-1 rounded-3 border bg-light d-flex flex-column align-items-center ${
-                        isCur ? 'border-primary shadow-sm ring' : 'border-light-subtle'
+                      onClick={() => setSelectedAngleIdx(idx)}
+                      className={`btn p-1 rounded-3 border bg-light d-flex flex-column align-items-center justify-content-center ${
+                        isCur ? 'border-primary shadow ring' : 'border-light-subtle'
                       }`}
                       style={{
-                        width: '74px',
-                        height: '74px',
-                        borderWidth: '2px',
-                        borderColor: isCur ? '#0072de' : undefined
+                        width: '76px',
+                        height: '76px',
+                        borderWidth: isCur ? '2.5px' : '1px',
+                        borderColor: isCur ? '#0072de' : '#e2e8f0'
                       }}
                       title={angle.label}
                     >
                       <img
                         src={angle.url}
                         alt={angle.label}
-                        className="w-100 h-100 object-fit-contain rounded-2"
+                        className="w-100 h-100 object-fit-contain rounded-2 p-1"
                         onError={(e) => { e.target.src = '/uploads/products/placeholder.svg'; }}
                       />
                     </button>
@@ -473,16 +641,16 @@ export default function ProductDetails() {
                 <span className="text-muted small">SKU: IND-{product.id}-2026</span>
               </div>
 
-              {/* Price Block */}
+              {/* DYNAMIC PRICE BLOCK (Updates Instantly on Variant Choice) */}
               <div className="p-3 bg-light rounded-4 mb-3 border">
                 <div className="d-flex align-items-baseline gap-3 mb-1">
                   <span className="display-6 fw-extrabold text-primary">
-                    {formatPrice(product.final_price || product.price)}
+                    {formatPrice(effectiveFinalPrice)}
                   </span>
                   {hasDiscount && (
                     <>
                       <span className="fs-5 text-muted text-decoration-line-through">
-                        {formatPrice(product.price)}
+                        {formatPrice(effectiveOriginalPrice)}
                       </span>
                       <span className="badge bg-danger fs-6 px-2 py-1 rounded-pill">
                         {Number(product.discount)}% OFF
@@ -490,9 +658,14 @@ export default function ProductDetails() {
                     </>
                   )}
                 </div>
-                <span className="text-muted small" style={{ fontSize: '0.78rem' }}>
-                  Inclusive of all taxes (CGST + SGST). Free Pan-India Doorstep Delivery over ₹999.
-                </span>
+                <div className="d-flex align-items-center justify-content-between small text-muted">
+                  <span>Inclusive of all taxes (CGST + SGST). Pan-India Doorstep Delivery over ₹999.</span>
+                  {selectedVariant && (
+                    <span className="badge bg-primary-subtle text-primary fw-bold">
+                      Selected: {selectedVariant}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* BANK OFFERS & NO-COST EMI ACCORDION (Amazon / Flipkart Signature) */}
@@ -520,7 +693,7 @@ export default function ProductDetails() {
                   <div className="d-flex align-items-start gap-2">
                     <span className="badge bg-info-subtle text-info-emphasis mt-1 fw-bold">NO COST EMI</span>
                     <span className="text-dark">
-                      Avail No Cost EMI starting at <strong>{formatPrice(Math.round(product.final_price / 6))}/mo</strong> for 6 months.
+                      Avail No Cost EMI starting at <strong>{formatPrice(Math.round(effectiveFinalPrice / 6))}/mo</strong> for 6 months.
                     </span>
                   </div>
                   <div className="d-flex align-items-start gap-2">
@@ -561,6 +734,7 @@ export default function ProductDetails() {
                   <span className="fw-bold text-dark small">
                     Color: <span className="text-primary fw-semibold">{selectedColor}</span>
                   </span>
+                  <span className="badge bg-success-subtle text-success small">In Stock</span>
                 </div>
                 <div className="d-flex gap-2 align-items-center">
                   {colorOptions.map((c) => {
@@ -570,14 +744,14 @@ export default function ProductDetails() {
                         key={c.name}
                         type="button"
                         onClick={() => setSelectedColor(c.name)}
-                        className={`btn p-1 rounded-circle border d-flex align-items-center justify-content-center ${
-                          isSel ? 'ring ring-primary shadow-sm' : ''
+                        className={`btn p-1 rounded-circle border d-flex align-items-center justify-content-center shadow-sm ${
+                          isSel ? 'ring ring-primary' : ''
                         }`}
                         style={{
-                          width: '36px',
-                          height: '36px',
+                          width: '38px',
+                          height: '38px',
                           backgroundColor: c.hex,
-                          borderColor: isSel ? '#0072de' : '#dee2e6',
+                          borderColor: isSel ? '#0072de' : '#cbd5e1',
                           borderWidth: isSel ? '3px' : '1px'
                         }}
                         title={c.name}
@@ -594,41 +768,71 @@ export default function ProductDetails() {
                 </div>
               </div>
 
-              {/* Size / Capacity Variant Selector with Size Chart modal link */}
-              <div className="mb-4">
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <span className="fw-bold text-dark small">
-                    {isTechCategory ? 'Storage Capacity:' : 'Size:'}{' '}
-                    <span className="text-primary fw-semibold">{selectedSize}</span>
-                  </span>
-                  {!isTechCategory && (
-                    <button
-                      type="button"
-                      className="btn btn-link p-0 text-decoration-none small fw-semibold text-primary"
-                      onClick={() => setShowSizeModal(true)}
-                    >
-                      <i className="bi bi-rulers me-1"></i> Size Chart &amp; Fit Guide
-                    </button>
-                  )}
-                </div>
-                <div className="d-flex flex-wrap gap-2">
-                  {sizeOptions.map((sz) => {
-                    const isSel = selectedSize === sz;
-                    return (
+              {/* DYNAMIC STORAGE / VARIANT SELECTOR (Amazon / Flipkart Signature) */}
+              {variantConfig && variantConfig.options && (
+                <div className="mb-4 p-3 bg-light rounded-4 border">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="fw-bold text-dark small">
+                      {variantConfig.label}{' '}
+                      <span className="text-primary fw-semibold">{selectedVariant}</span>
+                    </span>
+                    {variantConfig.showSizeChart && (
                       <button
-                        key={sz}
                         type="button"
-                        onClick={() => setSelectedSize(sz)}
-                        className={`btn px-3 py-2 rounded-3 fw-semibold small ${
-                          isSel ? 'btn-primary shadow-sm' : 'btn-outline-secondary'
-                        }`}
+                        className="btn btn-link p-0 text-decoration-none small fw-semibold text-primary"
+                        onClick={() => setShowSizeModal(true)}
                       >
-                        {sz}
+                        <i className="bi bi-rulers me-1"></i> Size Guide
                       </button>
-                    );
-                  })}
+                    )}
+                  </div>
+
+                  <div className="d-flex flex-wrap gap-2">
+                    {variantConfig.options.map((opt) => {
+                      const isSel = selectedVariant === opt.name;
+                      const optFinalPrice = discountRate > 0
+                        ? Math.round((baseOriginalPrice + opt.priceOffset) * (1 - discountRate))
+                        : (baseOriginalPrice + opt.priceOffset);
+
+                      return (
+                        <button
+                          key={opt.name}
+                          type="button"
+                          onClick={() => setSelectedVariant(opt.name)}
+                          className={`btn px-3 py-2 rounded-3 text-start transition-all ${
+                            isSel
+                              ? 'btn-primary shadow-sm border-primary'
+                              : 'btn-white bg-white border text-dark hover-shadow'
+                          }`}
+                          style={{ minWidth: '120px' }}
+                        >
+                          <div className="d-flex justify-content-between align-items-center gap-2 mb-1">
+                            <span className="fw-bold small">{opt.name}</span>
+                            {opt.badge && (
+                              <span
+                                className={`badge rounded-pill small ${
+                                  isSel ? 'bg-light text-dark' : 'bg-primary-subtle text-primary'
+                                }`}
+                                style={{ fontSize: '0.65rem' }}
+                              >
+                                {opt.badge}
+                              </span>
+                            )}
+                          </div>
+                          <div
+                            className={`small fw-bold ${
+                              isSel ? 'text-white' : 'text-primary'
+                            }`}
+                            style={{ fontSize: '0.82rem' }}
+                          >
+                            {formatPrice(optFinalPrice)}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Indian Pincode Delivery Estimator */}
               <div className="p-3 rounded-4 bg-light border mb-4">
@@ -692,39 +896,44 @@ export default function ProductDetails() {
                 </div>
               </div>
 
-              {/* Quantity Selector */}
+              {/* ROCK-SOLID ONE UI QUANTITY STEPPER (FIXES BLACK CIRCLED ISSUE) */}
               {!isOutOfStock && (
                 <div className="d-flex align-items-center gap-3 mb-4">
-                  <span className="fw-semibold text-secondary small">Quantity:</span>
-                  <div className="input-group" style={{ width: '130px' }}>
+                  <span className="fw-bold text-secondary small">Quantity:</span>
+                  <div
+                    className="d-inline-flex align-items-center bg-white rounded-pill p-1 border shadow-sm"
+                    style={{ flexWrap: 'nowrap' }}
+                  >
                     <button
-                      className="btn btn-outline-secondary rounded-start-pill"
                       type="button"
+                      className="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center text-dark border"
+                      style={{ width: '36px', height: '36px', minWidth: '36px' }}
                       disabled={quantity <= 1}
                       onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      title="Decrease quantity"
                     >
-                      -
+                      <i className="bi bi-dash fs-5"></i>
                     </button>
-                    <input
-                      type="number"
-                      className="form-control text-center fw-bold"
-                      value={quantity}
-                      min="1"
-                      max={product.stock}
-                      onChange={(e) => {
-                        const v = parseInt(e.target.value, 10);
-                        if (v >= 1 && v <= product.stock) setQuantity(v);
-                      }}
-                    />
+                    <span
+                      className="px-3 fw-extrabold text-dark text-center"
+                      style={{ minWidth: '45px', fontSize: '1.1rem', userSelect: 'none' }}
+                    >
+                      {quantity}
+                    </span>
                     <button
-                      className="btn btn-outline-secondary rounded-end-pill"
                       type="button"
+                      className="btn btn-light rounded-circle p-0 d-flex align-items-center justify-content-center text-dark border"
+                      style={{ width: '36px', height: '36px', minWidth: '36px' }}
                       disabled={quantity >= product.stock}
                       onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                      title="Increase quantity"
                     >
-                      +
+                      <i className="bi bi-plus fs-5"></i>
                     </button>
                   </div>
+                  <span className="text-muted small">
+                    (Total: <strong className="text-dark">{formatPrice(effectiveFinalPrice * quantity)}</strong>)
+                  </span>
                 </div>
               )}
 
@@ -776,8 +985,13 @@ export default function ProductDetails() {
                         {product.name}
                       </span>
                       <span className="fw-bold text-primary small">
-                        {formatPrice(product.final_price || product.price)}
+                        {formatPrice(effectiveFinalPrice)}
                       </span>
+                      {selectedVariant && (
+                        <div className="text-muted small" style={{ fontSize: '0.72rem' }}>
+                          {selectedVariant}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -1059,7 +1273,7 @@ export default function ProductDetails() {
             <div className="d-flex align-items-center gap-3 overflow-hidden">
               <div style={{ width: '48px', height: '48px' }} className="rounded-3 bg-light border p-1 flex-shrink-0">
                 <img
-                  src={selectedImage || mainImg}
+                  src={activeDisplayImg}
                   alt={product.name}
                   className="w-100 h-100 object-fit-contain"
                   onError={(e) => { e.target.src = '/uploads/products/placeholder.svg'; }}
@@ -1070,12 +1284,12 @@ export default function ProductDetails() {
                   {product.name}
                 </div>
                 <span className="text-muted small" style={{ fontSize: '0.72rem' }}>
-                  {selectedColor} • {selectedSize}
+                  {selectedColor} {selectedVariant ? `• ${selectedVariant}` : ''}
                 </span>
               </div>
               <div className="ps-2">
                 <span className="fs-5 fw-extrabold text-primary">
-                  {formatPrice(product.final_price || product.price)}
+                  {formatPrice(effectiveFinalPrice)}
                 </span>
                 {hasDiscount && (
                   <span className="badge bg-danger ms-2 small">-{Number(product.discount)}%</span>
@@ -1114,7 +1328,7 @@ export default function ProductDetails() {
           style={{ backgroundColor: 'rgba(0,0,0,0.92)', zIndex: 1060 }}
         >
           <div className="d-flex justify-content-between align-items-center text-white px-3">
-            <span className="fw-bold">{product.name} — Fullscreen Inspection</span>
+            <span className="fw-bold">{product.name} — Fullscreen Inspection ({galleryAngles[selectedAngleIdx]?.label})</span>
             <div className="d-flex gap-2">
               <button
                 type="button"
@@ -1152,7 +1366,7 @@ export default function ProductDetails() {
 
           <div className="d-flex align-items-center justify-content-center flex-grow-1 overflow-auto p-4">
             <img
-              src={selectedImage || mainImg}
+              src={activeDisplayImg}
               alt=""
               style={{
                 maxHeight: '80vh',
@@ -1169,8 +1383,8 @@ export default function ProductDetails() {
               <button
                 key={idx}
                 type="button"
-                onClick={() => setSelectedImage(angle.url)}
-                className={`btn p-1 bg-white rounded-2 border ${selectedImage === angle.url ? 'border-primary ring' : ''}`}
+                onClick={() => setSelectedAngleIdx(idx)}
+                className={`btn p-1 bg-white rounded-2 border ${selectedAngleIdx === idx ? 'border-primary ring' : ''}`}
                 style={{ width: '60px', height: '60px' }}
               >
                 <img src={angle.url} alt="" className="w-100 h-100 object-fit-contain" />

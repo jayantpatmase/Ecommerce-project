@@ -45,26 +45,33 @@ export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLa
 
         {/* Quantity Controls */}
         <div className="col-6 col-sm-3">
-          <div className="input-group input-group-sm" style={{ maxWidth: '130px' }}>
+          <div
+            className="d-inline-flex align-items-center bg-light border rounded-pill p-1 shadow-sm"
+            style={{ flexWrap: 'nowrap' }}
+          >
             <button
-              className="btn btn-outline-secondary"
+              className="btn btn-white rounded-circle p-0 d-flex align-items-center justify-content-center text-dark border shadow-sm"
               type="button"
+              style={{ width: '28px', height: '28px', minWidth: '28px' }}
               disabled={updating || item.quantity <= 1}
               onClick={() => onQuantityChange(item.cart_id, item.quantity - 1)}
+              title="Decrease quantity"
             >
               <i className="bi bi-dash"></i>
             </button>
-            <input
-              type="text"
-              className="form-control text-center fw-bold bg-white"
-              value={item.quantity}
-              readOnly
-            />
+            <span
+              className="px-2 fw-bold text-dark text-center"
+              style={{ minWidth: '32px', fontSize: '0.92rem', userSelect: 'none' }}
+            >
+              {item.quantity}
+            </span>
             <button
-              className="btn btn-outline-secondary"
+              className="btn btn-white rounded-circle p-0 d-flex align-items-center justify-content-center text-dark border shadow-sm"
               type="button"
+              style={{ width: '28px', height: '28px', minWidth: '28px' }}
               disabled={updating || item.quantity >= item.stock}
               onClick={() => onQuantityChange(item.cart_id, item.quantity + 1)}
+              title="Increase quantity"
             >
               <i className="bi bi-plus"></i>
             </button>
