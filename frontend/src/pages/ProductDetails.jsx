@@ -25,8 +25,13 @@ export default function ProductDetails() {
   const [activeTab, setActiveTab] = useState('description');
   const [wishlisted, setWishlisted] = useState(false);
 
-  // Gallery multi-angle thumbnails
+  // Gallery multi-angle thumbnails & Lightbox
   const [selectedImage, setSelectedImage] = useState(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
+
+  // Sticky Bottom Bar trigger on scroll (Amazon / Flipkart style)
+  const [showStickyBar, setShowStickyBar] = useState(false);
 
   // Variants selection (Amazon / Flipkart / Myntra style)
   const [selectedColor, setSelectedColor] = useState('Phantom Black');
@@ -38,11 +43,57 @@ export default function ProductDetails() {
   const [pincodeStatus, setPincodeStatus] = useState(null);
   const [checkingPin, setCheckingPin] = useState(false);
 
+  // Bank Offers modal state
+  const [showBankOffersModal, setShowBankOffersModal] = useState(false);
+
   // Frequently Bought Together bundle
   const [bundleIncludeSecondary, setBundleIncludeSecondary] = useState(true);
 
   // Recently Viewed Products
   const [recentlyViewed, setRecentlyViewed] = useState([]);
+
+  // Customer Q&A Search & List (Amazon Q&A)
+  const [qaSearch, setQaSearch] = useState('');
+  const [qaList, setQaList] = useState([
+    {
+      id: 1,
+      q: 'Is Cash on Delivery (COD) available for this product?',
+      a: 'Yes, Cash on Delivery is available across 19,000+ PIN codes in India. You can pay via cash or UPI QR code at your doorstep upon delivery.',
+      votes: 42
+    },
+    {
+      id: 2,
+      q: 'How does the 7-day doorstep replacement guarantee work?',
+      a: 'If you receive a defective, damaged, or mismatched product, you can request a 1-click replacement from your Orders page. Our courier partner (Blue Dart / Delhivery) will pick it up directly from your doorstep at zero extra cost.',
+      votes: 38
+    },
+    {
+      id: 3,
+      q: 'Is this item authentic and does it include a brand warranty?',
+      a: '100% Genuine. Every product is sourced directly from certified authorized distributors and comes with a 1-Year Pan-India Manufacturer Warranty plus an official GST Tax Invoice.',
+      votes: 29
+    },
+    {
+      id: 4,
+      q: 'Can I claim GST Input Tax Credit on this purchase?',
+      a: 'Yes, an official GST Tax Invoice (with CGST & SGST breakup) is generated instantly with every order. You can enter your company GSTIN during checkout to claim tax credit.',
+      votes: 18
+    }
+  ]);
+  const [newQuestionText, setNewQuestionText] = useState('');
+
+  // Track scroll position for sticky buy bar
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 420) {
+        setShowStickyBar(true);
+      } else {
+        setShowStickyBar(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const loadDetails = async () => {
@@ -71,7 +122,6 @@ export default function ProductDetails() {
           try {
             const rawStored = localStorage.getItem('eshop_recently_viewed');
             let list = rawStored ? JSON.parse(rawStored) : [];
-            // filter out current item and limit to 8
             list = list.filter((item) => Number(item.id) !== Number(p.id));
             list.unshift({
               id: p.id,
@@ -83,7 +133,7 @@ export default function ProductDetails() {
               avg_rating: p.avg_rating
             });
             localStorage.setItem('eshop_recently_viewed', JSON.stringify(list.slice(0, 8)));
-            setRecentlyViewed(list.slice(1, 7)); // exclude current product from display
+            setRecentlyViewed(list.slice(1, 7));
           } catch (storageErr) {
             console.error('Storage error', storageErr);
           }
@@ -131,7 +181,7 @@ export default function ProductDetails() {
       });
       setCheckingPin(false);
       showToast(`Delivery available to PIN ${pincode}! Expected by ${formattedDate}.`, 'success');
-    }, 450);
+    }, 400);
   };
 
   const handleAddToCart = async (buyNow = false) => {
@@ -206,6 +256,29 @@ export default function ProductDetails() {
     }
   };
 
+  const handleShareProduct = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+      showToast('Product link copied to clipboard! Share it with friends.', 'info');
+    } else {
+      showToast('Share link: ' + window.location.href, 'info');
+    }
+  };
+
+  const handleAskQuestion = (e) => {
+    e.preventDefault();
+    if (!newQuestionText.trim()) return;
+    const newEntry = {
+      id: Date.now(),
+      q: newQuestionText.trim(),
+      a: 'Thank you for asking! Our verified product support team will answer this question within 2 hours.',
+      votes: 1
+    };
+    setQaList([newEntry, ...qaList]);
+    setNewQuestionText('');
+    showToast('Your question has been posted to community Q&A!', 'success');
+  };
+
   if (loading) return <Loading message="Loading product information..." />;
   if (error || !product) return <div className="container py-5"><ErrorMessage message={error || 'Product not found.'} /></div>;
 
@@ -243,32 +316,64 @@ export default function ProductDetails() {
     ? Math.round((product.final_price + (bundleIncludeSecondary ? bundleCompanion.final_price - bundleSavings : 0)) * 100) / 100
     : product.final_price;
 
-  return (
-    <div className="py-5 bg-light flex-grow-1">
-      <div className="container">
-        {/* Breadcrumb */}
-        <nav aria-label="breadcrumb" className="mb-4">
-          <ol className="breadcrumb small">
-            <li className="breadcrumb-item"><Link to="/" className="text-decoration-none">Home</Link></li>
-            <li className="breadcrumb-item"><Link to="/products" className="text-decoration-none">Products</Link></li>
-            <li className="breadcrumb-item">
-              <Link to={`/products?category=${product.category_id}`} className="text-decoration-none">
-                {product.category_name}
-              </Link>
-            </li>
-            <li className="breadcrumb-item active text-truncate" style={{ maxWidth: '300px' }}>{product.name}</li>
-          </ol>
-        </nav>
+  // Filter Q&A
+  const filteredQa = qaList.filter(
+    (item) =>
+      item.q.toLowerCase().includes(qaSearch.toLowerCase()) ||
+      item.a.toLowerCase().includes(qaSearch.toLowerCase())
+  );
 
-        {/* Top Product Hero Layout */}
+  return (
+    <div className="py-4 bg-light flex-grow-1">
+      <div className="container">
+        {/* Breadcrumb & Social Share */}
+        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb small mb-0">
+              <li className="breadcrumb-item"><Link to="/" className="text-decoration-none">Home</Link></li>
+              <li className="breadcrumb-item"><Link to="/products" className="text-decoration-none">Products</Link></li>
+              <li className="breadcrumb-item">
+                <Link to={`/products?category=${product.category_id}`} className="text-decoration-none">
+                  {product.category_name}
+                </Link>
+              </li>
+              <li className="breadcrumb-item active text-truncate" style={{ maxWidth: '280px' }}>{product.name}</li>
+            </ol>
+          </nav>
+          <div className="d-flex gap-2">
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary rounded-pill d-flex align-items-center gap-1 shadow-sm"
+              onClick={handleShareProduct}
+              title="Share Product"
+            >
+              <i className="bi bi-share"></i>
+              <span className="small">Share</span>
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm rounded-pill d-flex align-items-center gap-1 shadow-sm ${
+                wishlisted ? 'btn-danger text-white' : 'btn-outline-danger'
+              }`}
+              onClick={handleToggleWishlist}
+            >
+              <i className={`bi ${wishlisted ? 'bi-heart-fill' : 'bi-heart'}`}></i>
+              <span className="small">{wishlisted ? 'Saved' : 'Wishlist'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* TOP PRODUCT HERO SECTION */}
         <div className="row g-4 mb-5">
-          {/* LEFT: Multi-Angle Interactive Gallery */}
+          {/* LEFT: Multi-Angle Interactive Gallery with Lightbox trigger */}
           <div className="col-lg-6">
             <div className="card border-0 shadow-sm rounded-4 overflow-hidden p-3 bg-white sticky-top" style={{ top: '90px' }}>
               {/* Main Active Image with Zoom Feel */}
               <div
                 className="ratio ratio-1x1 bg-light rounded-4 overflow-hidden d-flex align-items-center justify-content-center position-relative mb-3 border"
-                style={{ cursor: 'crosshair' }}
+                style={{ cursor: 'zoom-in' }}
+                onClick={() => setLightboxOpen(true)}
+                title="Click to Zoom Fullscreen"
               >
                 <img
                   src={selectedImage || mainImg}
@@ -278,7 +383,7 @@ export default function ProductDetails() {
                   onError={(e) => { e.target.src = '/uploads/products/placeholder.svg'; }}
                 />
                 <span className="position-absolute bottom-0 start-0 m-3 badge bg-white text-secondary border shadow-sm rounded-pill px-3 py-2 small">
-                  <i className="bi bi-search me-1 text-primary"></i> 360° Multi-Angle Preview
+                  <i className="bi bi-arrows-fullscreen me-1 text-primary"></i> Click to Zoom (360° Inspect)
                 </span>
                 {hasDiscount && (
                   <span className="position-absolute top-0 start-0 m-3 badge bg-danger text-white rounded-pill px-3 py-2 fw-bold shadow-sm">
@@ -320,15 +425,19 @@ export default function ProductDetails() {
 
               {/* Safe Shopping Guarantee Trust Strip */}
               <div className="row g-2 mt-3 pt-3 border-top text-center text-secondary small">
-                <div className="col-4">
+                <div className="col-3">
                   <i className="bi bi-arrow-repeat text-primary fs-5 d-block mb-1"></i>
-                  <span className="fw-semibold">7 Days Return</span>
+                  <span className="fw-semibold">7-Day Return</span>
                 </div>
-                <div className="col-4">
+                <div className="col-3">
                   <i className="bi bi-shield-check text-success fs-5 d-block mb-1"></i>
                   <span className="fw-semibold">100% Genuine</span>
                 </div>
-                <div className="col-4">
+                <div className="col-3">
+                  <i className="bi bi-truck text-info fs-5 d-block mb-1"></i>
+                  <span className="fw-semibold">Free Express</span>
+                </div>
+                <div className="col-3">
                   <i className="bi bi-file-earmark-check text-warning fs-5 d-block mb-1"></i>
                   <span className="fw-semibold">GST Invoice</span>
                 </div>
@@ -336,36 +445,36 @@ export default function ProductDetails() {
             </div>
           </div>
 
-          {/* RIGHT: Product Details & Variant Selection */}
+          {/* RIGHT: Product Details, Variants & Actions */}
           <div className="col-lg-6 d-flex flex-column">
             <div className="card border-0 shadow-sm rounded-4 p-4 bg-white flex-grow-1">
-              {/* Category & Brand Header */}
+              {/* Category & Flipkart Assured Pill */}
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <span className="badge bg-primary-subtle text-primary px-3 py-2 text-uppercase fw-bold rounded-pill" style={{ fontSize: '0.75rem' }}>
                   {product.category_name}
                 </span>
-                <span className="text-muted small">SKU: IND-{product.id}-2026</span>
+                <span className="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill px-3 py-1 fw-bold small">
+                  ⚡ E-Shop Assured Prime
+                </span>
               </div>
 
               <h1 className="h3 fw-bold text-dark mb-2">{product.name}</h1>
 
-              {/* Amazon / Flipkart Star Rating & Verified Count */}
+              {/* Ratings Summary (Amazon / Flipkart star pill) */}
               <div className="d-flex align-items-center gap-2 mb-3">
                 <div className="badge bg-success text-white px-2 py-1 rounded-pill d-flex align-items-center gap-1">
                   <span>{product.avg_rating > 0 ? Number(product.avg_rating).toFixed(1) : '4.5'}</span>
                   <i className="bi bi-star-fill text-warning" style={{ fontSize: '0.75rem' }}></i>
                 </div>
                 <span className="text-secondary small fw-medium">
-                  {product.review_count || 12} Verified Customer Ratings
+                  {product.review_count || 14} Verified Ratings &amp; Reviews
                 </span>
                 <span className="text-muted small">•</span>
-                <span className="text-success small fw-semibold">
-                  <i className="bi bi-check-circle-fill me-1"></i> Verified E-Shop Assured
-                </span>
+                <span className="text-muted small">SKU: IND-{product.id}-2026</span>
               </div>
 
               {/* Price Block */}
-              <div className="p-3 bg-light rounded-4 mb-4 border">
+              <div className="p-3 bg-light rounded-4 mb-3 border">
                 <div className="d-flex align-items-baseline gap-3 mb-1">
                   <span className="display-6 fw-extrabold text-primary">
                     {formatPrice(product.final_price || product.price)}
@@ -382,8 +491,68 @@ export default function ProductDetails() {
                   )}
                 </div>
                 <span className="text-muted small" style={{ fontSize: '0.78rem' }}>
-                  Inclusive of all taxes (CGST + SGST). Free pan-India delivery over ₹999.
+                  Inclusive of all taxes (CGST + SGST). Free Pan-India Doorstep Delivery over ₹999.
                 </span>
+              </div>
+
+              {/* BANK OFFERS & NO-COST EMI ACCORDION (Amazon / Flipkart Signature) */}
+              <div className="p-3 rounded-4 bg-light border border-info border-opacity-25 mb-4">
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <div className="fw-bold text-dark small d-flex align-items-center gap-2">
+                    <i className="bi bi-credit-card-2-front-fill text-primary"></i> Bank Offers &amp; No Cost EMI
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-link p-0 text-primary small fw-semibold text-decoration-none"
+                    onClick={() => setShowBankOffersModal(true)}
+                  >
+                    View All (4 Offers)
+                  </button>
+                </div>
+
+                <div className="d-flex flex-column gap-2 small">
+                  <div className="d-flex align-items-start gap-2">
+                    <span className="badge bg-success-subtle text-success mt-1 fw-bold">BANK OFFER</span>
+                    <span className="text-dark">
+                      Flat <strong>₹1,500 Instant Discount</strong> on HDFC &amp; SBI Credit Card EMI transactions.
+                    </span>
+                  </div>
+                  <div className="d-flex align-items-start gap-2">
+                    <span className="badge bg-info-subtle text-info-emphasis mt-1 fw-bold">NO COST EMI</span>
+                    <span className="text-dark">
+                      Avail No Cost EMI starting at <strong>{formatPrice(Math.round(product.final_price / 6))}/mo</strong> for 6 months.
+                    </span>
+                  </div>
+                  <div className="d-flex align-items-start gap-2">
+                    <span className="badge bg-warning-subtle text-dark mt-1 fw-bold">SUPERCOINS</span>
+                    <span className="text-dark">
+                      Earn <strong>25 SuperCoins</strong> on this order. 1 Coin = ₹1 discount on next purchases.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Flipkart-Style Highlights Bullets */}
+              <div className="mb-4">
+                <h6 className="fw-bold text-dark small mb-2">Key Highlights:</h6>
+                <div className="row g-2 small text-secondary">
+                  <div className="col-sm-6 d-flex align-items-center gap-2">
+                    <i className="bi bi-patch-check-fill text-primary"></i>
+                    <span>1-Year Pan-India Warranty</span>
+                  </div>
+                  <div className="col-sm-6 d-flex align-items-center gap-2">
+                    <i className="bi bi-box-seam-fill text-success"></i>
+                    <span>7-Day Doorstep Replacement</span>
+                  </div>
+                  <div className="col-sm-6 d-flex align-items-center gap-2">
+                    <i className="bi bi-truck text-info"></i>
+                    <span>Free Express Delivery over ₹999</span>
+                  </div>
+                  <div className="col-sm-6 d-flex align-items-center gap-2">
+                    <i className="bi bi-receipt text-warning"></i>
+                    <span>Official GST Tax Invoice</span>
+                  </div>
+                </div>
               </div>
 
               {/* Color Swatch Selector */}
@@ -523,7 +692,7 @@ export default function ProductDetails() {
                 </div>
               </div>
 
-              {/* Quantity Selector & Action Buttons */}
+              {/* Quantity Selector */}
               {!isOutOfStock && (
                 <div className="d-flex align-items-center gap-3 mb-4">
                   <span className="fw-semibold text-secondary small">Quantity:</span>
@@ -559,8 +728,8 @@ export default function ProductDetails() {
                 </div>
               )}
 
-              {/* Action Buttons (Cart, Buy Now, Wishlist) */}
-              <div className="d-flex flex-wrap gap-3 mb-3">
+              {/* Action Buttons (Add to Cart, Buy Now) */}
+              <div className="d-flex flex-wrap gap-3 mb-3" id="main-buy-buttons">
                 <button
                   className="btn btn-primary btn-lg rounded-pill flex-grow-1 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2"
                   onClick={() => handleAddToCart(false)}
@@ -578,22 +747,6 @@ export default function ProductDetails() {
                   <i className="bi bi-lightning-charge-fill fs-5"></i>
                   Buy Now
                 </button>
-
-                <button
-                  className={`btn btn-lg rounded-pill border px-4 ${wishlisted ? 'btn-danger text-white' : 'btn-outline-danger'}`}
-                  onClick={handleToggleWishlist}
-                  title="Save to Wishlist"
-                >
-                  <i className={`bi ${wishlisted ? 'bi-heart-fill' : 'bi-heart'}`}></i>
-                </button>
-              </div>
-
-              {/* SuperCoins Banner */}
-              <div className="p-3 rounded-4 bg-warning-subtle text-dark border-warning border-opacity-25 border d-flex align-items-center gap-3">
-                <span className="badge bg-warning text-dark fs-6 rounded-circle p-2">🪙</span>
-                <div className="small">
-                  <strong>Earn 25 SuperCoins</strong> on this purchase! Redeem 1 coin = ₹1 on future orders.
-                </div>
               </div>
             </div>
           </div>
@@ -691,7 +844,7 @@ export default function ProductDetails() {
           </div>
         )}
 
-        {/* Tabs: Description & Technical Specifications */}
+        {/* TABS: PRODUCT DESCRIPTION & TECHNICAL SPECS */}
         <div className="card border-0 shadow-sm rounded-4 p-4 bg-white mb-5">
           <ul className="nav nav-pills mb-3 border-bottom pb-3">
             <li className="nav-item">
@@ -761,12 +914,83 @@ export default function ProductDetails() {
           </div>
         </div>
 
-        {/* Customer Reviews Section */}
+        {/* CUSTOMER QUESTIONS & ANSWERS (Amazon Style Q&A Section) */}
+        <div className="card border-0 shadow-sm rounded-4 p-4 bg-white mb-5">
+          <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <h4 className="fw-bold text-dark mb-1">Customer Questions &amp; Answers</h4>
+              <p className="text-muted small mb-0">Have a question about this product? Find answers below</p>
+            </div>
+            <span className="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 small fw-bold">
+              {qaList.length} Community Answers
+            </span>
+          </div>
+
+          {/* Q&A Search bar */}
+          <div className="input-group mb-4">
+            <span className="input-group-text bg-light border-end-0">
+              <i className="bi bi-search text-muted"></i>
+            </span>
+            <input
+              type="text"
+              className="form-control border-start-0"
+              placeholder="Have a question? Search for answers (e.g. warranty, delivery, cod)..."
+              value={qaSearch}
+              onChange={(e) => setQaSearch(e.target.value)}
+            />
+            {qaSearch && (
+              <button className="btn btn-outline-secondary" type="button" onClick={() => setQaSearch('')}>
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* Q&A List */}
+          <div className="d-flex flex-column gap-3 mb-4">
+            {filteredQa.map((item) => (
+              <div key={item.id} className="p-3 bg-light rounded-3 border">
+                <div className="d-flex align-items-start gap-2 mb-2">
+                  <span className="badge bg-secondary-subtle text-dark fw-bold px-2 py-1">Q</span>
+                  <strong className="text-dark">{item.q}</strong>
+                </div>
+                <div className="d-flex align-items-start gap-2 text-secondary small ps-4">
+                  <span className="badge bg-primary-subtle text-primary fw-bold px-2 py-1">A</span>
+                  <div>
+                    <p className="mb-1 text-dark">{item.a}</p>
+                    <span className="text-muted" style={{ fontSize: '0.72rem' }}>
+                      <i className="bi bi-hand-thumbs-up me-1"></i> {item.votes} people found this helpful • Verified E-Shop Answer
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Post Question Form */}
+          <form onSubmit={handleAskQuestion} className="border-top pt-3">
+            <label className="form-label small fw-bold text-dark">Don't see your question? Ask the community</label>
+            <div className="d-flex gap-2">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Type your question here..."
+                value={newQuestionText}
+                onChange={(e) => setNewQuestionText(e.target.value)}
+                required
+              />
+              <button type="submit" className="btn btn-primary px-4 fw-semibold rounded-pill">
+                Submit Question
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* CUSTOMER REVIEWS SECTION */}
         <div className="mb-5">
           <Reviews productId={product.id} />
         </div>
 
-        {/* Related Products Section */}
+        {/* RELATED PRODUCTS */}
         {related.length > 0 && (
           <div className="mb-5">
             <h4 className="fw-bold text-dark mb-4">You May Also Like</h4>
@@ -780,7 +1004,7 @@ export default function ProductDetails() {
           </div>
         )}
 
-        {/* RECENTLY VIEWED PRODUCTS (Amazon / Flipkart Style) */}
+        {/* RECENTLY VIEWED PRODUCTS (Flipkart / Amazon Style) */}
         {recentlyViewed.length > 0 && (
           <div className="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -824,6 +1048,137 @@ export default function ProductDetails() {
           </div>
         )}
       </div>
+
+      {/* STICKY BOTTOM ACTION BAR (Amazon & Flipkart Signature Purchase Bar) */}
+      {showStickyBar && (
+        <div
+          className="position-fixed bottom-0 start-0 w-100 bg-white border-top shadow-lg py-2 px-3 transition-all"
+          style={{ zIndex: 1040, animation: 'slideUp 0.3s ease-out' }}
+        >
+          <div className="container d-flex align-items-center justify-content-between gap-3">
+            <div className="d-flex align-items-center gap-3 overflow-hidden">
+              <div style={{ width: '48px', height: '48px' }} className="rounded-3 bg-light border p-1 flex-shrink-0">
+                <img
+                  src={selectedImage || mainImg}
+                  alt={product.name}
+                  className="w-100 h-100 object-fit-contain"
+                  onError={(e) => { e.target.src = '/uploads/products/placeholder.svg'; }}
+                />
+              </div>
+              <div className="d-none d-sm-block overflow-hidden">
+                <div className="fw-bold text-dark text-truncate small" style={{ maxWidth: '300px' }}>
+                  {product.name}
+                </div>
+                <span className="text-muted small" style={{ fontSize: '0.72rem' }}>
+                  {selectedColor} • {selectedSize}
+                </span>
+              </div>
+              <div className="ps-2">
+                <span className="fs-5 fw-extrabold text-primary">
+                  {formatPrice(product.final_price || product.price)}
+                </span>
+                {hasDiscount && (
+                  <span className="badge bg-danger ms-2 small">-{Number(product.discount)}%</span>
+                )}
+              </div>
+            </div>
+
+            <div className="d-flex gap-2">
+              <button
+                type="button"
+                className="btn btn-outline-primary rounded-pill px-3 fw-bold btn-sm d-flex align-items-center gap-1"
+                onClick={() => handleAddToCart(false)}
+                disabled={isOutOfStock || addingToCart}
+              >
+                <i className="bi bi-cart-plus"></i>
+                <span className="d-none d-md-inline">Add to Cart</span>
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary rounded-pill px-4 fw-bold btn-sm d-flex align-items-center gap-1 shadow-sm"
+                onClick={() => handleAddToCart(true)}
+                disabled={isOutOfStock || addingToCart}
+              >
+                <i className="bi bi-lightning-charge-fill"></i>
+                <span>Buy Now</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FULLSCREEN LIGHTBOX & ZOOM PREVIEW MODAL (Amazon / Myntra Inspect) */}
+      {lightboxOpen && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 d-flex flex-column justify-content-between p-3"
+          style={{ backgroundColor: 'rgba(0,0,0,0.92)', zIndex: 1060 }}
+        >
+          <div className="d-flex justify-content-between align-items-center text-white px-3">
+            <span className="fw-bold">{product.name} — Fullscreen Inspection</span>
+            <div className="d-flex gap-2">
+              <button
+                type="button"
+                className="btn btn-outline-light btn-sm rounded-pill"
+                onClick={() => setZoomLevel((z) => Math.min(2.5, z + 0.25))}
+              >
+                <i className="bi bi-zoom-in"></i> Zoom In
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline-light btn-sm rounded-pill"
+                onClick={() => setZoomLevel((z) => Math.max(1, z - 0.25))}
+              >
+                <i className="bi bi-zoom-out"></i> Zoom Out
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline-light btn-sm rounded-pill"
+                onClick={() => setZoomLevel(1)}
+              >
+                Reset
+              </button>
+              <button
+                type="button"
+                className="btn btn-light btn-sm rounded-circle"
+                onClick={() => {
+                  setLightboxOpen(false);
+                  setZoomLevel(1);
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          <div className="d-flex align-items-center justify-content-center flex-grow-1 overflow-auto p-4">
+            <img
+              src={selectedImage || mainImg}
+              alt=""
+              style={{
+                maxHeight: '80vh',
+                maxWidth: '90vw',
+                objectFit: 'contain',
+                transform: `scale(${zoomLevel})`,
+                transition: 'transform 0.2s ease-out'
+              }}
+            />
+          </div>
+
+          <div className="d-flex justify-content-center gap-2 pb-2">
+            {galleryAngles.map((angle, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setSelectedImage(angle.url)}
+                className={`btn p-1 bg-white rounded-2 border ${selectedImage === angle.url ? 'border-primary ring' : ''}`}
+                style={{ width: '60px', height: '60px' }}
+              >
+                <img src={angle.url} alt="" className="w-100 h-100 object-fit-contain" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* MODAL: SIZE CHART & FIT GUIDE (Myntra Style) */}
       {showSizeModal && (
@@ -899,6 +1254,54 @@ export default function ProductDetails() {
               <div className="modal-footer border-0 pt-0">
                 <button type="button" className="btn btn-primary rounded-pill px-4" onClick={() => setShowSizeModal(false)}>
                   Got It
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: ALL BANK OFFERS & TERMS (Amazon India Style) */}
+      {showBankOffersModal && (
+        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1055 }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content rounded-4 border-0 shadow">
+              <div className="modal-header border-0 pb-0">
+                <h5 className="modal-title fw-bold text-dark d-flex align-items-center gap-2">
+                  <i className="bi bi-credit-card-2-front-fill text-primary"></i> Available Bank &amp; Partner Offers
+                </h5>
+                <button type="button" className="btn-close" onClick={() => setShowBankOffersModal(false)}></button>
+              </div>
+              <div className="modal-body pt-3">
+                <div className="d-flex flex-column gap-3 small">
+                  <div className="p-3 bg-light rounded-3 border">
+                    <div className="fw-bold text-dark mb-1">Offer 1: HDFC Bank Instant Discount</div>
+                    <p className="text-secondary mb-1">Flat ₹1,500 Instant Discount on HDFC Bank Credit Card EMI transactions on min spend of ₹7,500.</p>
+                    <span className="text-muted" style={{ fontSize: '0.74rem' }}>Valid till 31 Oct • Select card at checkout</span>
+                  </div>
+
+                  <div className="p-3 bg-light rounded-3 border">
+                    <div className="fw-bold text-dark mb-1">Offer 2: SBI Credit Card Savings</div>
+                    <p className="text-secondary mb-1">10% Instant Discount up to ₹1,000 on SBI Credit Cards on orders above ₹4,000.</p>
+                    <span className="text-muted" style={{ fontSize: '0.74rem' }}>Valid across all categories</span>
+                  </div>
+
+                  <div className="p-3 bg-light rounded-3 border">
+                    <div className="fw-bold text-dark mb-1">Offer 3: No Cost EMI on Credit Cards</div>
+                    <p className="text-secondary mb-1">Zero interest EMI for 3 &amp; 6 months with ICICI, Axis, HDFC &amp; Kotak Bank cards.</p>
+                    <span className="text-muted" style={{ fontSize: '0.74rem' }}>Interest refunded as upfront bank discount</span>
+                  </div>
+
+                  <div className="p-3 bg-light rounded-3 border">
+                    <div className="fw-bold text-dark mb-1">Offer 4: Business GST Invoice Credit</div>
+                    <p className="text-secondary mb-1">Get an official tax invoice with 18% GST breakdown. Save up to 28% for business use.</p>
+                    <span className="text-muted" style={{ fontSize: '0.74rem' }}>Enter GSTIN during checkout</span>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer border-0 pt-0">
+                <button type="button" className="btn btn-primary rounded-pill px-4" onClick={() => setShowBankOffersModal(false)}>
+                  Done
                 </button>
               </div>
             </div>
