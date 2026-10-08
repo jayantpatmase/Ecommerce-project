@@ -79,7 +79,7 @@ export default function ProductCard({
         <div className="row g-3 align-items-center">
           {/* Thumbnail */}
           <div className="col-4 col-sm-3 col-md-3">
-            <div className="ratio ratio-1x1 bg-light rounded-3 overflow-hidden border position-relative">
+            <div className="bg-light rounded-3 overflow-hidden border position-relative w-100" style={{ aspectRatio: '1 / 1' }}>
               <Link to={`/products/${product.id}`} className="w-100 h-100 d-block">
                 <img
                   src={product.image || '/uploads/products/placeholder.svg'}
@@ -90,7 +90,7 @@ export default function ProductCard({
                 />
               </Link>
               {hasDiscount && (
-                <span className="position-absolute top-0 start-0 m-2 badge bg-danger rounded-pill px-2 py-1 small">
+                <span className="position-absolute top-0 start-0 m-2 badge bg-danger rounded-pill px-2 py-1 small" style={{ zIndex: 2, width: 'auto', height: 'auto' }}>
                   -{Number(product.discount)}%
                 </span>
               )}

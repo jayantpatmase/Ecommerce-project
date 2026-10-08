@@ -744,6 +744,17 @@ h1, h2, h3, h4, h5, h6 {
    OneUI Badges, Chips & Alerts
    ============================================================== */
 
+/* CRITICAL FIX: Prevent Bootstrap .ratio > * selector from stretching badges into giant circles */
+.ratio > .badge,
+.ratio > .btn,
+.ratio > [class*="badge"],
+.ratio > .position-absolute:not(img):not(iframe):not(video):not(a) {
+  width: auto !important;
+  height: auto !important;
+  max-width: max-content !important;
+  max-height: max-content !important;
+}
+
 .badge {
   font-weight: 600;
   border-radius: var(--oneui-r-pill);

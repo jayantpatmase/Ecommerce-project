@@ -581,13 +581,13 @@ export default function ProductDetails() {
           {/* LEFT: Multi-Angle Interactive Gallery with Lightbox trigger */}
           <div className="col-lg-6">
             <div className="card border-0 shadow-sm rounded-4 overflow-hidden p-3 bg-white sticky-top" style={{ top: '90px' }}>
-              {/* Main Active Image with Zoom Feel */}
+              {/* Main Active Image Container */}
               <div
-                className="ratio ratio-1x1 rounded-4 overflow-hidden d-flex align-items-center justify-content-center position-relative mb-3 border shadow-inner"
+                className="w-100 rounded-4 overflow-hidden position-relative mb-3 border shadow-sm d-flex align-items-center justify-content-center"
                 style={{
+                  aspectRatio: '1 / 1',
                   cursor: 'zoom-in',
-                  backgroundColor: '#f8fafc',
-                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+                  backgroundColor: '#ffffff'
                 }}
                 onClick={() => setLightboxOpen(true)}
                 title="Click to Zoom Fullscreen"
@@ -595,31 +595,30 @@ export default function ProductDetails() {
                 <img
                   src={activeDisplayImg}
                   alt={product.name}
-                  className="object-fit-contain p-4 w-100 h-100 transition-all"
-                  style={{
-                    filter: selectedColor === 'Phantom Black'
-                      ? 'contrast(1.08)'
-                      : selectedColor === 'Mystic Silver'
-                      ? 'brightness(1.15) contrast(0.95)'
-                      : selectedColor === 'Sapphire Blue'
-                      ? 'hue-rotate(180deg) saturate(1.2)'
-                      : 'hue-rotate(310deg) saturate(1.1)',
-                    transition: 'filter 0.3s ease, transform 0.3s ease'
-                  }}
+                  className="object-fit-contain p-3 w-100 h-100 transition-all"
                   onError={(e) => { e.target.src = '/uploads/products/placeholder.svg'; }}
                 />
 
                 {/* Perspective angle tag */}
-                <span className="position-absolute top-0 start-0 m-3 badge bg-dark bg-opacity-75 text-white rounded-pill px-3 py-1 small">
+                <span
+                  className="position-absolute top-0 start-0 m-3 badge bg-dark bg-opacity-75 text-white rounded-pill px-3 py-1 small"
+                  style={{ zIndex: 5, width: 'auto', height: 'auto' }}
+                >
                   {galleryAngles[selectedAngleIdx]?.label}
                 </span>
 
-                <span className="position-absolute bottom-0 start-0 m-3 badge bg-white text-secondary border shadow-sm rounded-pill px-3 py-2 small">
+                <span
+                  className="position-absolute bottom-0 start-0 m-3 badge bg-white text-secondary border shadow-sm rounded-pill px-3 py-2 small"
+                  style={{ zIndex: 5, width: 'auto', height: 'auto' }}
+                >
                   <i className="bi bi-arrows-fullscreen me-1 text-primary"></i> 360° Lightbox Zoom
                 </span>
 
                 {hasDiscount && (
-                  <span className="position-absolute top-0 end-0 m-3 badge bg-danger text-white rounded-pill px-3 py-2 fw-bold shadow-sm">
+                  <span
+                    className="position-absolute top-0 end-0 m-3 badge bg-danger text-white rounded-pill px-3 py-2 fw-bold shadow-sm"
+                    style={{ zIndex: 5, width: 'auto', height: 'auto' }}
+                  >
                     {Number(product.discount)}% OFF
                   </span>
                 )}

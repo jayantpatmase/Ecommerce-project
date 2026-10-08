@@ -109,15 +109,16 @@ export default function Wishlist() {
             {wishlist.map((item) => (
               <div key={item.wishlist_id} className="col-12 col-sm-6 col-lg-3">
                 <div className="card h-100 border-0 shadow-sm rounded-3 overflow-hidden bg-white">
-                  <div className="position-relative bg-light ratio ratio-1x1">
+                  <div className="position-relative bg-light overflow-hidden w-100" style={{ aspectRatio: '1 / 1' }}>
                     <img
                       src={item.image || '/uploads/products/placeholder.svg'}
                       alt={item.name}
-                      className="object-fit-contain p-3"
+                      className="w-100 h-100 object-fit-contain p-3"
                       onError={(e) => { e.target.src = '/uploads/products/placeholder.svg'; }}
                     />
                     <button
                       className="btn btn-sm btn-light position-absolute top-0 end-0 m-2 rounded-circle shadow-sm"
+                      style={{ zIndex: 2, width: '32px', height: '32px', padding: 0 }}
                       onClick={() => handleRemove(item.wishlist_id, item.product_id)}
                       title="Remove from wishlist"
                     >
