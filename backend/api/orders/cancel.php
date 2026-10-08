@@ -44,16 +44,18 @@ try {
         Response::error('Access denied. You can only cancel your own orders.', [], 403);
     }
 
-    // Business Rule: Only pending orders can be cancelled by customers
+    // Business Rule: Pending or Confirmed orders can be cancelled before dispatch
     if ($order['order_status'] === 'cancelled') {
         $db->rollBack();
-        Response::error('This order is already cancelled.', [], 400);
+        Response::error('This order has already been cancelled.', [], 400);
     }
 
-    if ($order['order_status'] !== 'pending') {
+    if (!in_array($order['order_status'], ['pending', 'confirmed'])) {
         $db->rollBack();
-        Response::error("Cannot cancel order with status '{$order['order_status']}'. Only pending orders can be cancelled.", [], 400);
+        Response::error("Cannot cancel order with status '{$order['order_status']}'. The item has already been dispatched. Please contact customer support for return requests.", [], 400);
     }
+
+    $reason = Validator::sanitize($data['reason'] ?? 'Cancelled by customer');
 
     // Restore stock for all items
     $itemsStmt = $db->prepare("SELECT product_id, quantity FROM order_items WHERE order_id = ?");
@@ -65,9 +67,27 @@ try {
         $restoreStmt->execute([(int)$item['quantity'], (int)$item['product_id']]);
     }
 
-    // Update order status
-    $cancelStmt = $db->prepare("UPDATE orders SET order_status = 'cancelled', updated_at = NOW() WHERE id = ?");
-    $cancelStmt->execute([(int)$orderId]);
+    // Update order status and record cancellation reason
+    $cancelStmt = $db->prepare("UPDATE orders SET order_status = 'cancelled', cancel_reason = ?, updated_at = NOW() WHERE id = ?");
+    $cancelStmt->execute([$reason, (int)$orderId]);
+
+    // If customer already paid online/UPI, trigger refund workflow
+    if ($order['payment_status'] === 'paid') {
+        $refOrder = $db->prepare("UPDATE orders SET payment_status = 'refunded' WHERE id = ?");
+        $refOrder->execute([(int)$orderId]);
+
+        $refundTxnId = 'REFUND-' . date('YmdHis') . '-' . (int)$orderId;
+        $refPayStmt = $db->prepare("
+            INSERT INTO payments (order_id, payment_method, transaction_id, amount, status, gateway_response)
+            VALUES (?, 'Instant Refund', ?, ?, 'refunded', ?)
+        ");
+        $refPayStmt->execute([
+            (int)$orderId,
+            $refundTxnId,
+            (float)$order['total_amount'],
+            "100% Refund credited back to original payment method. Reason: {$reason}"
+        ]);
+    }
 
     $db->commit();
 
@@ -75,9 +95,10 @@ try {
     EmailService::sendOrderStatusUpdate($user['email'], $user['name'], (int)$orderId, 'cancelled', $userId);
 
     Response::success([
-        'order_id'     => (int)$orderId,
-        'order_status' => 'cancelled'
-    ], 'Order has been successfully cancelled and stock restored.');
+        'order_id'      => (int)$orderId,
+        'order_status'  => 'cancelled',
+        'cancel_reason' => $reason
+    ], 'Order has been successfully cancelled and stock restored to inventory.');
 
 } catch (Exception $e) {
     if ($db->inTransaction()) {

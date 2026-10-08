@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { formatPrice } from '../utils/format';
 import Reviews from '../components/Reviews';
 import ProductCard from '../components/ProductCard';
@@ -12,6 +13,7 @@ export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, refreshCounts } = useAuth();
+  const { showToast } = useToast();
 
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
@@ -64,12 +66,13 @@ export default function ProductDetails() {
       await api.addToCart(product.id, quantity);
       await refreshCounts();
       if (buyNow) {
+        showToast(`Proceeding to checkout with ${product.name}...`, 'primary');
         navigate('/checkout');
       } else {
-        alert(`Added ${quantity} unit(s) of "${product.name}" to your cart!`);
+        showToast(`Added ${quantity} unit(s) of "${product.name}" to your cart!`, 'success');
       }
     } catch (err) {
-      alert(err.message || 'Could not add to cart.');
+      showToast(err.message || 'Could not add to cart.', 'danger');
     } finally {
       setAddingToCart(false);
     }
@@ -85,13 +88,15 @@ export default function ProductDetails() {
       if (wishlisted) {
         await api.removeFromWishlist(null, product.id);
         setWishlisted(false);
+        showToast('Removed from your saved wishlist', 'info');
       } else {
         await api.addToWishlist(product.id);
         setWishlisted(true);
+        showToast('Added to your saved wishlist!', 'success');
       }
       await refreshCounts();
     } catch (err) {
-      console.error(err);
+      showToast(err.message || 'Could not update wishlist', 'danger');
     }
   };
 

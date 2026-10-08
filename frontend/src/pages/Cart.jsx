@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { formatPrice } from '../utils/format';
 import CartItem from '../components/CartItem';
 import Loading from '../components/Loading';
@@ -10,6 +11,7 @@ import ErrorMessage from '../components/ErrorMessage';
 
 export default function Cart() {
   const { user, refreshCounts } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const [cart, setCart] = useState(null);
@@ -48,8 +50,9 @@ export default function Cart() {
       await api.updateCart(cartId, newQuantity);
       await loadCart();
       await refreshCounts();
+      showToast('Cart quantity updated', 'info');
     } catch (err) {
-      alert(err.message || 'Could not update item quantity.');
+      showToast(err.message || 'Could not update item quantity.', 'danger');
     } finally {
       setUpdating(false);
     }
@@ -61,8 +64,9 @@ export default function Cart() {
       await api.removeFromCart(cartId);
       await loadCart();
       await refreshCounts();
+      showToast('Item removed from cart', 'info');
     } catch (err) {
-      alert(err.message || 'Could not remove item.');
+      showToast(err.message || 'Could not remove item.', 'danger');
     } finally {
       setUpdating(false);
     }

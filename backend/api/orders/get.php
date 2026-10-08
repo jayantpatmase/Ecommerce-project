@@ -22,7 +22,8 @@ $db = Database::getConnection();
 // Fetch order
 $stmt = $db->prepare("
     SELECT o.id, o.user_id, o.total_amount, o.shipping_address, o.payment_method,
-           o.payment_status, o.order_status, o.created_at, o.updated_at,
+           o.payment_status, o.order_status, o.cancel_reason, o.tracking_number, o.courier_name,
+           o.created_at, o.updated_at,
            u.name AS customer_name, u.email AS customer_email, u.phone AS customer_phone
     FROM orders o
     JOIN users u ON u.id = o.user_id

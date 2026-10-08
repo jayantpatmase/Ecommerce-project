@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { formatPrice } from '../utils/format';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
@@ -9,6 +10,7 @@ import ErrorMessage from '../components/ErrorMessage';
 
 export default function Wishlist() {
   const { user, refreshCounts } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const [wishlist, setWishlist] = useState([]);
@@ -46,8 +48,9 @@ export default function Wishlist() {
       await api.removeFromWishlist(wishlistId, productId);
       await loadWishlist();
       await refreshCounts();
+      showToast('Item removed from wishlist', 'info');
     } catch (err) {
-      alert(err.message || 'Could not remove item');
+      showToast(err.message || 'Could not remove item', 'danger');
     }
   };
 
@@ -57,8 +60,9 @@ export default function Wishlist() {
       await api.moveWishlistToCart(productId);
       await loadWishlist();
       await refreshCounts();
+      showToast('Item moved to your shopping bag!', 'success');
     } catch (err) {
-      alert(err.message || 'Could not move product to cart');
+      showToast(err.message || 'Could not move product to cart', 'danger');
     } finally {
       setMovingId(null);
     }

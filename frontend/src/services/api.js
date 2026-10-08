@@ -87,11 +87,18 @@ export const api = {
   removeFromWishlist: (wishlistId, productId) => request('/wishlist/delete.php', { method: 'POST', body: JSON.stringify({ wishlist_id: wishlistId, product_id: productId }) }),
   moveWishlistToCart: (productId) => request('/wishlist/move-to-cart.php', { method: 'POST', body: JSON.stringify({ product_id: productId }) }),
 
+  // --- USER ADDRESS BOOK ---
+  getAddresses: () => request('/user/addresses/list.php', { method: 'GET' }),
+  addAddress: (data) => request('/user/addresses/add.php', { method: 'POST', body: JSON.stringify(data) }),
+  updateSavedAddress: (data) => request('/user/addresses/update.php', { method: 'POST', body: JSON.stringify(data) }),
+  deleteAddress: (id) => request('/user/addresses/delete.php', { method: 'POST', body: JSON.stringify({ id }) }),
+  setDefaultAddress: (id) => request('/user/addresses/set-default.php', { method: 'POST', body: JSON.stringify({ id }) }),
+
   // --- ORDERS & CHECKOUT ---
   createOrder: (data) => request('/orders/create.php', { method: 'POST', body: JSON.stringify(data) }),
   getOrders: () => request('/orders/list.php', { method: 'GET' }),
   getOrder: (id) => request(`/orders/get.php?id=${id}`, { method: 'GET' }),
-  cancelOrder: (orderId) => request('/orders/cancel.php', { method: 'POST', body: JSON.stringify({ order_id: orderId }) }),
+  cancelOrder: (orderId, reason = '') => request('/orders/cancel.php', { method: 'POST', body: JSON.stringify({ order_id: orderId, reason }) }),
 
   // --- REVIEWS & RATINGS ---
   getReviews: (productId) => request(`/reviews/list.php?product_id=${productId}`, { method: 'GET' }),
