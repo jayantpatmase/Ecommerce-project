@@ -1,19 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
+import { formatPrice } from '../utils/format';
 
 export default function Navbar() {
   const { user, logout, cartCount, wishlistCount } = useAuth();
   const [quickSearch, setQuickSearch] = useState('');
+  const [suggestions, setSuggestions] = useState(null);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const searchContainerRef = useRef(null);
+
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Close search dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
+        setShowSearchDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Fetch live suggestions with debounce
+  useEffect(() => {
+    const fetchSuggest = async () => {
+      try {
+        const res = await api.getSearchSuggestions(quickSearch);
+        if (res.success) {
+          setSuggestions(res.data);
+        }
+      } catch (err) {
+        console.error('Search suggest error:', err);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      if (showSearchDropdown) {
+        fetchSuggest();
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [quickSearch, showSearchDropdown]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (quickSearch.trim()) {
       navigate(`/products?search=${encodeURIComponent(quickSearch.trim())}`);
-      setQuickSearch('');
+      setShowSearchDropdown(false);
     }
+  };
+
+  const handleSelectProduct = (productId) => {
+    setShowSearchDropdown(false);
+    setQuickSearch('');
+    navigate(`/products/${productId}`);
+  };
+
+  const handleSelectKeyword = (kw) => {
+    setQuickSearch(kw);
+    setShowSearchDropdown(false);
+    navigate(`/products?search=${encodeURIComponent(kw)}`);
   };
 
   const handleLogout = async () => {
@@ -83,30 +134,126 @@ export default function Navbar() {
               )}
             </ul>
 
-            {/* OneUI Pill Search Bar */}
-            <form className="d-flex me-lg-3 my-2 my-lg-0" onSubmit={handleSearchSubmit}>
-              <div className="oneui-nav-search shadow-sm">
-                <i className="bi bi-search text-muted me-2"></i>
-                <input
-                  type="text"
-                  placeholder="Search store..."
-                  value={quickSearch}
-                  onChange={(e) => setQuickSearch(e.target.value)}
-                />
-                {quickSearch && (
-                  <button
-                    type="button"
-                    className="border-0 bg-transparent text-muted p-0 ms-1"
-                    onClick={() => setQuickSearch('')}
-                  >
-                    <i className="bi bi-x-circle-fill"></i>
-                  </button>
-                )}
-              </div>
-            </form>
+            {/* Amazon-Style Live Search Bar with Instant Autocomplete */}
+            <div className="position-relative me-lg-3 my-2 my-lg-0" ref={searchContainerRef} style={{ minWidth: '280px' }}>
+              <form onSubmit={handleSearchSubmit}>
+                <div className="oneui-nav-search shadow-sm w-100">
+                  <i className="bi bi-search text-muted me-2"></i>
+                  <input
+                    type="text"
+                    placeholder="Search for products, brands and more..."
+                    value={quickSearch}
+                    onFocus={() => setShowSearchDropdown(true)}
+                    onChange={(e) => {
+                      setQuickSearch(e.target.value);
+                      setShowSearchDropdown(true);
+                    }}
+                  />
+                  {quickSearch && (
+                    <button
+                      type="button"
+                      className="border-0 bg-transparent text-muted p-0 ms-1"
+                      onClick={() => setQuickSearch('')}
+                    >
+                      <i className="bi bi-x-circle-fill"></i>
+                    </button>
+                  )}
+                </div>
+              </form>
 
-            {/* Quick Actions (Wishlist, Cart & Profile) */}
+              {/* Instant Search Suggestions Dropdown */}
+              {showSearchDropdown && suggestions && (
+                <div
+                  className="card position-absolute start-0 end-0 mt-2 border-0 shadow-lg rounded-4 overflow-hidden bg-white"
+                  style={{ zIndex: 1060, maxHeight: '420px', overflowY: 'auto' }}
+                >
+                  {/* Matching Products */}
+                  {suggestions.products && suggestions.products.length > 0 && (
+                    <div className="p-2 border-bottom">
+                      <span className="text-muted small fw-bold px-2 py-1 text-uppercase" style={{ fontSize: '0.7rem' }}>
+                        Matching Products
+                      </span>
+                      {suggestions.products.map((p) => (
+                        <div
+                          key={p.id}
+                          className="d-flex align-items-center gap-2 p-2 rounded-3 cursor-pointer hover-bg-light"
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handleSelectProduct(p.id)}
+                        >
+                          <img
+                            src={p.image || '/uploads/products/placeholder.svg'}
+                            alt=""
+                            style={{ width: '36px', height: '36px', objectFit: 'contain' }}
+                            className="rounded border p-1 bg-white flex-shrink-0"
+                          />
+                          <div className="flex-grow-1 overflow-hidden">
+                            <div className="small fw-semibold text-dark text-truncate">{p.name}</div>
+                            <span className="text-primary fw-bold small">{formatPrice(p.final_price || p.price)}</span>
+                          </div>
+                          <i className="bi bi-chevron-right text-muted small"></i>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Matching Categories */}
+                  {suggestions.categories && suggestions.categories.length > 0 && (
+                    <div className="p-2 border-bottom bg-light bg-opacity-50">
+                      <span className="text-muted small fw-bold px-2 py-1 text-uppercase" style={{ fontSize: '0.7rem' }}>
+                        Categories
+                      </span>
+                      <div className="d-flex flex-wrap gap-1 p-1">
+                        {suggestions.categories.map((c) => (
+                          <Link
+                            key={c.id}
+                            to={`/products?category=${c.id}`}
+                            className="badge bg-white text-dark border rounded-pill px-3 py-2 text-decoration-none small shadow-sm"
+                            onClick={() => setShowSearchDropdown(false)}
+                          >
+                            <i className="bi bi-tag-fill text-primary me-1"></i> {c.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Trending Keywords */}
+                  {suggestions.trending && suggestions.trending.length > 0 && (
+                    <div className="p-2">
+                      <span className="text-muted small fw-bold px-2 py-1 text-uppercase" style={{ fontSize: '0.7rem' }}>
+                        Trending Searches
+                      </span>
+                      {suggestions.trending.map((kw, i) => (
+                        <div
+                          key={i}
+                          className="d-flex align-items-center gap-2 px-2 py-1 rounded-2 cursor-pointer hover-bg-light small text-dark"
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handleSelectKeyword(kw)}
+                        >
+                          <i className="bi bi-arrow-up-right text-muted"></i>
+                          <span>{kw}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Quick Actions (Coins, Wishlist, Cart & Profile) */}
             <div className="d-flex align-items-center gap-2">
+              {/* Flipkart / Amazon style SuperCoins pill */}
+              {user && (
+                <Link
+                  to="/profile"
+                  className="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill px-3 py-2 text-decoration-none small d-none d-sm-flex align-items-center gap-1 shadow-sm"
+                  title="Your E-Shop Rewards & SuperCoins"
+                >
+                  <i className="bi bi-coin text-warning fs-6"></i>
+                  <span className="fw-bold">{user.reward_coins || 120} Coins</span>
+                </Link>
+              )}
+
               {/* Wishlist Pill */}
               <Link to="/wishlist" className="nav-icon-btn" title="Saved Wishlist">
                 <i className="bi bi-heart fs-5"></i>
@@ -149,15 +296,20 @@ export default function Navbar() {
                     <li className="px-3 py-2 border-bottom mb-1">
                       <div className="fw-bold text-dark">{user.name}</div>
                       <div className="text-muted small text-truncate" style={{ fontSize: '0.75rem' }}>{user.email}</div>
+                      <div className="mt-1">
+                        <span className="badge bg-warning text-dark rounded-pill px-2 py-0 small" style={{ fontSize: '0.68rem' }}>
+                          🪙 {user.reward_coins || 120} Reward Coins
+                        </span>
+                      </div>
                     </li>
                     <li>
                       <Link className="dropdown-item rounded-3 py-2 small" to="/profile">
-                        <i className="bi bi-person me-2 text-primary"></i> My Profile
+                        <i className="bi bi-person me-2 text-primary"></i> My Profile &amp; Addresses
                       </Link>
                     </li>
                     <li>
                       <Link className="dropdown-item rounded-3 py-2 small" to="/orders">
-                        <i className="bi bi-box-seam me-2 text-primary"></i> Order History
+                        <i className="bi bi-box-seam me-2 text-primary"></i> My Order History
                       </Link>
                     </li>
                     <li>
@@ -169,8 +321,8 @@ export default function Navbar() {
                       <>
                         <li><hr className="dropdown-divider my-1" /></li>
                         <li>
-                          <Link className="dropdown-item rounded-3 py-2 small text-primary fw-semibold" to="/admin">
-                            <i className="bi bi-shield-lock me-2"></i> Admin Dashboard
+                          <Link className="dropdown-item rounded-3 py-2 small text-primary fw-bold" to="/admin">
+                            <i className="bi bi-shield-lock me-2"></i> Admin Panel
                           </Link>
                         </li>
                       </>
@@ -184,11 +336,11 @@ export default function Navbar() {
                   </ul>
                 </div>
               ) : (
-                <div className="d-flex align-items-center gap-2 ms-1">
-                  <Link to="/login" className="btn btn-sm btn-outline-primary">
+                <div className="d-flex align-items-center gap-1 ms-1">
+                  <Link to="/login" className="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
                     Sign In
                   </Link>
-                  <Link to="/register" className="btn btn-sm btn-primary">
+                  <Link to="/register" className="btn btn-primary btn-sm rounded-pill px-3 fw-semibold shadow-sm">
                     Register
                   </Link>
                 </div>

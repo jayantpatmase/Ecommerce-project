@@ -23,6 +23,7 @@ $db = Database::getConnection();
 $stmt = $db->prepare("
     SELECT o.id, o.user_id, o.total_amount, o.shipping_address, o.payment_method,
            o.payment_status, o.order_status, o.cancel_reason, o.tracking_number, o.courier_name,
+           o.coupon_code, o.coupon_discount, o.coins_redeemed,
            o.created_at, o.updated_at,
            u.name AS customer_name, u.email AS customer_email, u.phone AS customer_phone
     FROM orders o
@@ -76,5 +77,10 @@ $order['invoice'] = $invStmt->fetch() ?: null;
 $payStmt = $db->prepare("SELECT payment_method, transaction_id, amount, status, created_at FROM payments WHERE order_id = ?");
 $payStmt->execute([(int)$orderId]);
 $order['payment_records'] = $payStmt->fetchAll();
+
+// Fetch Returns / Replacements history
+$retStmt = $db->prepare("SELECT * FROM order_returns WHERE order_id = ? ORDER BY id DESC");
+$retStmt->execute([(int)$orderId]);
+$order['returns'] = $retStmt->fetchAll();
 
 Response::success($order, 'Order details loaded successfully.');

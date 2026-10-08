@@ -27,7 +27,7 @@ if (!Validator::isEmail($email)) {
 }
 
 $db = Database::getConnection();
-$stmt = $db->prepare("SELECT id, name, email, password, phone, address, role, status FROM users WHERE email = ?");
+$stmt = $db->prepare("SELECT id, name, email, password, phone, address, role, status, reward_coins, wallet_balance FROM users WHERE email = ?");
 $stmt->execute([$email]);
 $user = $stmt->fetch();
 
@@ -49,11 +49,13 @@ unset($user['password']); // Never leak password hash
 
 Response::success([
     'user' => [
-        'id'      => (int)$user['id'],
-        'name'    => $user['name'],
-        'email'   => $user['email'],
-        'phone'   => $user['phone'],
-        'address' => $user['address'],
-        'role'    => $user['role']
+        'id'             => (int)$user['id'],
+        'name'           => $user['name'],
+        'email'          => $user['email'],
+        'phone'          => $user['phone'],
+        'address'        => $user['address'],
+        'role'           => $user['role'],
+        'reward_coins'   => (int)($user['reward_coins'] ?? 120),
+        'wallet_balance' => (float)($user['wallet_balance'] ?? 250.00)
     ]
 ], 'Logged in successfully!');

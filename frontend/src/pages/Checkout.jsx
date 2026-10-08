@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -11,6 +11,31 @@ export default function Checkout() {
   const { user, refreshCounts } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Coupon & SuperCoins state passed from Cart or storage
+  const [appliedCoupon, setAppliedCoupon] = useState(() => {
+    if (location.state?.appliedCoupon) return location.state.appliedCoupon;
+    try {
+      const stored = sessionStorage.getItem('eshop_applied_coupon');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [coinsRedeemed, setCoinsRedeemed] = useState(() => {
+    if (typeof location.state?.coinsRedeemed === 'number') return location.state.coinsRedeemed;
+    try {
+      const stored = sessionStorage.getItem('eshop_redeemed_coins');
+      return stored ? parseInt(stored, 10) : 0;
+    } catch {
+      return 0;
+    }
+  });
+
+  const [checkoutCouponCode, setCheckoutCouponCode] = useState('');
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
 
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -201,10 +226,14 @@ export default function Checkout() {
 
       const res = await api.createOrder({
         shipping_address: fullShippingAddress,
-        payment_method: paymentMethod
+        payment_method: paymentMethod,
+        coupon_code: appliedCoupon?.code || '',
+        coins_redeemed: coinsRedeemed || 0
       });
 
       if (res.success && res.data?.order_id) {
+        sessionStorage.removeItem('eshop_applied_coupon');
+        sessionStorage.removeItem('eshop_redeemed_coins');
         await refreshCounts();
         showToast(`Order #${res.data.order_id} placed successfully!`, 'success');
         navigate(`/order-success?order_id=${res.data.order_id}`, {
@@ -226,10 +255,41 @@ export default function Checkout() {
     }
   };
 
+  const handleApplyCheckoutCoupon = async (e) => {
+    e.preventDefault();
+    const code = checkoutCouponCode.trim().toUpperCase();
+    if (!code) return;
+    try {
+      setValidatingCoupon(true);
+      const res = await api.validateCoupon(code, cart?.summary?.subtotal || 0);
+      if (res.success) {
+        setAppliedCoupon(res.data);
+        sessionStorage.setItem('eshop_applied_coupon', JSON.stringify(res.data));
+        setCheckoutCouponCode('');
+        showToast(`Coupon ${code} applied successfully!`, 'success');
+      } else {
+        showToast(res.message || 'Invalid coupon', 'danger');
+      }
+    } catch (err) {
+      showToast(err.message || 'Could not apply coupon', 'danger');
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCheckoutCoupon = () => {
+    setAppliedCoupon(null);
+    sessionStorage.removeItem('eshop_applied_coupon');
+    showToast('Coupon removed from checkout', 'info');
+  };
+
   if (loading) return <Loading message="Preparing secure checkout..." />;
 
   const items = cart?.items || [];
   const summary = cart?.summary || { subtotal: 0, shipping: 0, grand_total: 0 };
+  const couponDiscountAmount = appliedCoupon?.discount_amount || 0;
+  const coinsDiscountAmount = coinsRedeemed || 0;
+  const finalPayable = Math.max(0, Math.round((summary.grand_total - couponDiscountAmount - coinsDiscountAmount) * 100) / 100);
   const gstAmount = Math.round((summary.subtotal * 0.18) * 100) / 100;
 
   return (
@@ -716,11 +776,65 @@ export default function Checkout() {
                   ))}
                 </div>
 
+                {/* Coupon applied or input in Checkout */}
+                <div className="mb-3 p-3 bg-light rounded-3 border">
+                  {appliedCoupon ? (
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <span className="badge bg-success fw-bold me-2">{appliedCoupon.code}</span>
+                        <span className="small text-success fw-semibold">Saved {formatPrice(couponDiscountAmount)}</span>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-link text-danger p-0 fw-semibold text-decoration-none"
+                        onClick={handleRemoveCheckoutCoupon}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="small fw-semibold text-dark mb-1">Have a Coupon Code?</div>
+                      <div className="input-group input-group-sm">
+                        <input
+                          type="text"
+                          className="form-control text-uppercase"
+                          placeholder="e.g. FESTIVE15"
+                          value={checkoutCouponCode}
+                          onChange={(e) => setCheckoutCouponCode(e.target.value.toUpperCase())}
+                        />
+                        <button
+                          className="btn btn-primary fw-semibold"
+                          type="button"
+                          onClick={handleApplyCheckoutCoupon}
+                          disabled={validatingCoupon}
+                        >
+                          {validatingCoupon ? '...' : 'Apply'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Price Details */}
                 <div className="d-flex justify-content-between mb-2 small text-secondary">
                   <span>Items Subtotal</span>
                   <span className="fw-semibold text-dark">{formatPrice(summary.subtotal)}</span>
                 </div>
+
+                {appliedCoupon && couponDiscountAmount > 0 && (
+                  <div className="d-flex justify-content-between mb-2 small text-success">
+                    <span>Coupon Discount ({appliedCoupon.code})</span>
+                    <span className="fw-semibold">-{formatPrice(couponDiscountAmount)}</span>
+                  </div>
+                )}
+
+                {coinsDiscountAmount > 0 && (
+                  <div className="d-flex justify-content-between mb-2 small text-success">
+                    <span>SuperCoins Redeemed ({coinsDiscountAmount})</span>
+                    <span className="fw-semibold">-{formatPrice(coinsDiscountAmount)}</span>
+                  </div>
+                )}
 
                 <div className="d-flex justify-content-between mb-2 small text-secondary">
                   <span>GST (18% inclusive)</span>
@@ -742,7 +856,7 @@ export default function Checkout() {
                     <span className="text-muted small" style={{ fontSize: '0.72rem' }}>All Indian Taxes Included</span>
                   </div>
                   <span className="fs-4 fw-extrabold text-primary">
-                    {formatPrice(summary.grand_total)}
+                    {formatPrice(finalPayable)}
                   </span>
                 </div>
 
@@ -779,7 +893,7 @@ export default function Checkout() {
                 </div>
                 <div className="modal-body pt-0">
                   <h6 className="fw-bold text-dark mb-1">Scan to Pay via UPI</h6>
-                  <p className="text-muted small mb-3">Pay {formatPrice(summary.grand_total)}</p>
+                  <p className="text-muted small mb-3">Pay {formatPrice(finalPayable)}</p>
 
                   <div className="p-3 bg-white border rounded-4 d-inline-block shadow-sm mb-3">
                     {/* Authentic Vector QR Code Representation */}

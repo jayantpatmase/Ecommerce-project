@@ -99,20 +99,59 @@ try {
         ];
     }
 
+    // Coupon discount calculation
+    $couponCode = strtoupper(trim(Validator::sanitize($data['coupon_code'] ?? '')));
+    $couponDiscount = 0.00;
+    if (!empty($couponCode)) {
+        $cpStmt = $db->prepare("SELECT * FROM coupons WHERE code = ? AND status = 1");
+        $cpStmt->execute([$couponCode]);
+        $coupon = $cpStmt->fetch();
+        if ($coupon && $subtotal >= (float)$coupon['min_order_amount']) {
+            if ($coupon['discount_type'] === 'percentage') {
+                $couponDiscount = ($subtotal * (float)$coupon['discount_value']) / 100;
+                if ($coupon['max_discount'] !== null && $couponDiscount > (float)$coupon['max_discount']) {
+                    $couponDiscount = (float)$coupon['max_discount'];
+                }
+            } else {
+                $couponDiscount = min((float)$coupon['discount_value'], $subtotal);
+            }
+            $couponDiscount = round($couponDiscount, 2);
+        }
+    }
+
+    // Reward coins redemption (1 coin = ₹1 off)
+    $coinsRedeemed = max(0, (int)($data['coins_redeemed'] ?? 0));
+    $coinsDiscount = 0.00;
+    if ($coinsRedeemed > 0) {
+        $coinStmt = $db->prepare("SELECT reward_coins FROM users WHERE id = ?");
+        $coinStmt->execute([$userId]);
+        $userCoins = (int)$coinStmt->fetchColumn();
+        $coinsRedeemed = min($coinsRedeemed, $userCoins, 50);
+        $coinsDiscount = (float)$coinsRedeemed;
+        $db->prepare("UPDATE users SET reward_coins = reward_coins - ? WHERE id = ?")->execute([$coinsRedeemed, $userId]);
+    }
+
     // Shipping fee rule: Free delivery for orders >= ₹999, otherwise ₹49 flat
     $shippingFee = ($subtotal >= 999.00) ? 0.00 : 49.00;
-    $grandTotal  = round($subtotal + $shippingFee, 2);
+    $grandTotal  = max(0.00, round($subtotal - $couponDiscount - $coinsDiscount + $shippingFee, 2));
 
     $paymentStatus = 'pending';
     $orderStatus   = ($paymentMethod === 'Cash on Delivery') ? 'confirmed' : 'pending';
 
-    // 4. Create Order Header
+    // 4. Create Order Header with tracking AWB and coupon details
+    $expAwb = 'EXP-' . time() . '-IN';
     $orderInsert = $db->prepare("
-        INSERT INTO orders (user_id, total_amount, shipping_address, payment_method, payment_status, order_status, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, NOW())
+        INSERT INTO orders (user_id, total_amount, shipping_address, payment_method, payment_status, order_status, coupon_code, coupon_discount, coins_redeemed, courier_name, tracking_number, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Blue Dart Express', ?, NOW())
     ");
-    $orderInsert->execute([$userId, $grandTotal, $shippingAddress, $paymentMethod, $paymentStatus, $orderStatus]);
+    $orderInsert->execute([
+        $userId, $grandTotal, $shippingAddress, $paymentMethod, $paymentStatus, $orderStatus,
+        $couponCode ?: null, $couponDiscount, $coinsRedeemed, $expAwb
+    ]);
     $orderId = (int)$db->lastInsertId();
+
+    // Reward +25 coins to user for completing a purchase (Flipkart SuperCoins style)
+    $db->prepare("UPDATE users SET reward_coins = reward_coins + 25 WHERE id = ?")->execute([$userId]);
 
     // 5. Insert Order Items & 6. Reduce Stock
     $itemInsert = $db->prepare("

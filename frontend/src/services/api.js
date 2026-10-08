@@ -94,11 +94,19 @@ export const api = {
   deleteAddress: (id) => request('/user/addresses/delete.php', { method: 'POST', body: JSON.stringify({ id }) }),
   setDefaultAddress: (id) => request('/user/addresses/set-default.php', { method: 'POST', body: JSON.stringify({ id }) }),
 
-  // --- ORDERS & CHECKOUT ---
+  // --- COUPONS & PROMOS ---
+  getCoupons: () => request('/coupons/list.php', { method: 'GET' }),
+  validateCoupon: (code, orderTotal) => request('/coupons/validate.php', { method: 'POST', body: JSON.stringify({ code, order_total: orderTotal }) }),
+
+  // --- SEARCH SUGGESTIONS & AUTOCOMPLETE ---
+  getSearchSuggestions: (q) => request(`/products/search-suggest.php?q=${encodeURIComponent(q)}`, { method: 'GET' }),
+
+  // --- ORDERS & RETURNS ---
   createOrder: (data) => request('/orders/create.php', { method: 'POST', body: JSON.stringify(data) }),
   getOrders: () => request('/orders/list.php', { method: 'GET' }),
   getOrder: (id) => request(`/orders/get.php?id=${id}`, { method: 'GET' }),
   cancelOrder: (orderId, reason = '') => request('/orders/cancel.php', { method: 'POST', body: JSON.stringify({ order_id: orderId, reason }) }),
+  requestReturn: (data) => request('/orders/return.php', { method: 'POST', body: JSON.stringify(data) }),
 
   // --- REVIEWS & RATINGS ---
   getReviews: (productId) => request(`/reviews/list.php?product_id=${productId}`, { method: 'GET' }),

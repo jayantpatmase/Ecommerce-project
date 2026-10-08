@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatPrice } from '../utils/format';
 
-export default function CartItem({ item, onQuantityChange, onRemove, updating = false }) {
+export default function CartItem({ item, onQuantityChange, onRemove, onSaveForLater, updating = false }) {
   const isOutOfStock = !item.is_available;
 
   return (
@@ -76,14 +76,26 @@ export default function CartItem({ item, onQuantityChange, onRemove, updating = 
           <div className="fs-6 fw-bold text-dark mb-1">
             {formatPrice(item.item_total)}
           </div>
-          <button
-            className="btn btn-sm btn-link text-danger text-decoration-none p-0 d-flex align-items-center gap-1"
-            disabled={updating}
-            onClick={() => onRemove(item.cart_id)}
-          >
-            <i className="bi bi-trash"></i>
-            <span>Remove</span>
-          </button>
+          <div className="d-flex gap-3 align-items-center">
+            {onSaveForLater && (
+              <button
+                className="btn btn-sm btn-link text-primary text-decoration-none p-0 d-flex align-items-center gap-1"
+                disabled={updating}
+                onClick={() => onSaveForLater(item)}
+              >
+                <i className="bi bi-bookmark"></i>
+                <span className="small">Save for later</span>
+              </button>
+            )}
+            <button
+              className="btn btn-sm btn-link text-danger text-decoration-none p-0 d-flex align-items-center gap-1"
+              disabled={updating}
+              onClick={() => onRemove(item.cart_id)}
+            >
+              <i className="bi bi-trash"></i>
+              <span className="small">Remove</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

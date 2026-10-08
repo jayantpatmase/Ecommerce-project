@@ -32,6 +32,48 @@ export default function OrderDetails() {
   const [invoiceHtml, setInvoiceHtml] = useState(null);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
+  // 7-Day Doorstep Return & Replacement Modal State
+  const [returnModalOpen, setReturnModalOpen] = useState(false);
+  const [selectedProductForReturn, setSelectedProductForReturn] = useState(null);
+  const [returnType, setReturnType] = useState('replacement');
+  const [returnReason, setReturnReason] = useState('Defective or damaged during transit');
+  const [returnComments, setReturnComments] = useState('');
+  const [submittingReturn, setSubmittingReturn] = useState(false);
+
+  const handleOpenReturnModal = (product) => {
+    setSelectedProductForReturn(product);
+    setReturnType('replacement');
+    setReturnReason('Defective or damaged during transit');
+    setReturnComments('');
+    setReturnModalOpen(true);
+  };
+
+  const handleSubmitReturn = async (e) => {
+    e.preventDefault();
+    if (!selectedProductForReturn) return;
+    try {
+      setSubmittingReturn(true);
+      const res = await api.requestReturn({
+        order_id: order.id,
+        product_id: selectedProductForReturn.product_id,
+        return_type: returnType,
+        reason: returnReason,
+        comments: returnComments
+      });
+      if (res.success) {
+        showToast(res.message || 'Return request accepted! Doorstep pickup scheduled.', 'success');
+        setReturnModalOpen(false);
+        await fetchDetails();
+      } else {
+        showToast(res.message || 'Could not submit return request.', 'danger');
+      }
+    } catch (err) {
+      showToast(err.message || 'Error submitting return request.', 'danger');
+    } finally {
+      setSubmittingReturn(false);
+    }
+  };
+
   const fetchDetails = async () => {
     try {
       setLoading(true);
@@ -349,7 +391,7 @@ export default function OrderDetails() {
                   <th className="text-center">Quantity</th>
                   <th className="text-end">Unit Price</th>
                   <th className="text-end pe-4">Subtotal</th>
-                  <th className="text-center pe-4">Feedback</th>
+                  <th className="text-center pe-4">Actions &amp; Feedback</th>
                 </tr>
               </thead>
               <tbody>
@@ -380,13 +422,38 @@ export default function OrderDetails() {
                     <td className="text-end small">{formatPrice(it.purchase_price)}</td>
                     <td className="text-end pe-4 fw-bold text-dark">{formatPrice(it.item_total)}</td>
                     <td className="text-center pe-4">
-                      <button
-                        onClick={() => handleOpenReviewModal(it)}
-                        className="btn btn-outline-primary btn-sm rounded-pill px-3"
-                        style={{ fontSize: '0.75rem' }}
-                      >
-                        <i className="bi bi-star me-1"></i> Write Review
-                      </button>
+                      <div className="d-flex flex-column gap-1 align-items-center">
+                        <button
+                          onClick={() => handleOpenReviewModal(it)}
+                          className="btn btn-outline-primary btn-sm rounded-pill px-3"
+                          style={{ fontSize: '0.75rem' }}
+                        >
+                          <i className="bi bi-star me-1"></i> Write Review
+                        </button>
+
+                        {order.order_status === 'delivered' && (
+                          (() => {
+                            const activeReturn = order.returns?.find((r) => Number(r.product_id) === Number(it.product_id));
+                            if (activeReturn) {
+                              return (
+                                <span className="badge bg-warning-subtle text-warning-emphasis rounded-pill px-2 py-1 small">
+                                  <i className="bi bi-arrow-repeat me-1"></i>
+                                  {activeReturn.return_type === 'replacement' ? 'Replacement' : 'Return'} (Pickup: {activeReturn.pickup_date})
+                                </span>
+                              );
+                            }
+                            return (
+                              <button
+                                onClick={() => handleOpenReturnModal(it)}
+                                className="btn btn-outline-warning btn-sm rounded-pill px-3 text-dark fw-semibold"
+                                style={{ fontSize: '0.75rem' }}
+                              >
+                                <i className="bi bi-arrow-repeat me-1"></i> 7-Day Return / Replace
+                              </button>
+                            );
+                          })()
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -395,13 +462,25 @@ export default function OrderDetails() {
           </div>
 
           <div className="p-4 bg-light d-flex justify-content-end">
-            <div style={{ minWidth: '260px' }}>
+            <div style={{ minWidth: '280px' }}>
               <div className="d-flex justify-content-between mb-2 small text-secondary">
                 <span>Items Subtotal</span>
                 <span className="fw-semibold text-dark">
                   {formatPrice(items.reduce((s, x) => s + x.item_total, 0))}
                 </span>
               </div>
+              {order.coupon_discount > 0 && (
+                <div className="d-flex justify-content-between mb-2 small text-success">
+                  <span>Coupon Discount ({order.coupon_code || 'APPLIED'})</span>
+                  <span className="fw-semibold">-{formatPrice(order.coupon_discount)}</span>
+                </div>
+              )}
+              {order.coins_redeemed > 0 && (
+                <div className="d-flex justify-content-between mb-2 small text-success">
+                  <span>SuperCoins Redeemed ({order.coins_redeemed})</span>
+                  <span className="fw-semibold">-{formatPrice(order.coins_redeemed)}</span>
+                </div>
+              )}
               <div className="d-flex justify-content-between mb-2 small text-secondary">
                 <span>GST (18% inclusive)</span>
                 <span className="text-dark">CGST + SGST</span>
@@ -535,6 +614,101 @@ export default function OrderDetails() {
                     </button>
                     <button type="submit" className="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" disabled={submittingReview}>
                       {submittingReview ? 'Submitting...' : 'Post Review'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL: 7-DAY RETURN / REPLACEMENT */}
+        {returnModalOpen && selectedProductForReturn && (
+          <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1055 }}>
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content rounded-4 border-0 shadow">
+                <div className="modal-header border-0 pb-0">
+                  <h5 className="modal-title fw-bold text-dark d-flex align-items-center gap-2">
+                    <i className="bi bi-arrow-repeat text-primary"></i> 7-Day Return / Replacement
+                  </h5>
+                  <button type="button" className="btn-close" onClick={() => setReturnModalOpen(false)}></button>
+                </div>
+                <form onSubmit={handleSubmitReturn}>
+                  <div className="modal-body pt-3">
+                    <div className="d-flex align-items-center gap-3 mb-3 p-2 bg-light rounded-3">
+                      <img
+                        src={selectedProductForReturn.product_image || '/uploads/products/placeholder.svg'}
+                        alt=""
+                        style={{ width: '48px', height: '48px', objectFit: 'contain' }}
+                      />
+                      <div>
+                        <div className="fw-bold text-dark small">{selectedProductForReturn.product_name}</div>
+                        <div className="text-muted small">Qty: {selectedProductForReturn.quantity} • {formatPrice(selectedProductForReturn.purchase_price)}</div>
+                      </div>
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="form-label small fw-semibold text-dark">Resolution Type</label>
+                      <div className="d-flex gap-2">
+                        <button
+                          type="button"
+                          className={`btn btn-sm rounded-pill flex-grow-1 fw-bold ${returnType === 'replacement' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                          onClick={() => setReturnType('replacement')}
+                        >
+                          <i className="bi bi-box-seam me-1"></i> Replacement
+                        </button>
+                        <button
+                          type="button"
+                          className={`btn btn-sm rounded-pill flex-grow-1 fw-bold ${returnType === 'refund' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                          onClick={() => setReturnType('refund')}
+                        >
+                          <i className="bi bi-cash-stack me-1"></i> Refund to Source
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="form-label small fw-semibold text-dark">Reason for Request *</label>
+                      <select
+                        className="form-select rounded-3"
+                        value={returnReason}
+                        onChange={(e) => setReturnReason(e.target.value)}
+                        required
+                      >
+                        <option value="Defective or damaged during transit">Defective or damaged during transit</option>
+                        <option value="Received wrong item or size">Received wrong item or size</option>
+                        <option value="Product quality not as expected">Product quality not as expected</option>
+                        <option value="Missing accessories or parts">Missing accessories or parts</option>
+                        <option value="Performance not satisfactory">Performance not satisfactory</option>
+                        <option value="Other reason">Other reason</option>
+                      </select>
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="form-label small fw-semibold text-dark">Additional Comments</label>
+                      <textarea
+                        className="form-control rounded-3"
+                        rows="2"
+                        placeholder="Please provide details about the issue..."
+                        value={returnComments}
+                        onChange={(e) => setReturnComments(e.target.value)}
+                      ></textarea>
+                    </div>
+
+                    <div className="alert alert-info py-2 px-3 small rounded-3 mb-0">
+                      <i className="bi bi-truck me-1"></i> Free doorstep courier pickup will be scheduled with Blue Dart / Delhivery. Please ensure product tags and original box are retained.
+                    </div>
+                  </div>
+                  <div className="modal-footer border-0 pt-0">
+                    <button type="button" className="btn btn-light rounded-pill px-4" onClick={() => setReturnModalOpen(false)}>
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary rounded-pill px-4 fw-bold shadow-sm"
+                      disabled={submittingReturn}
+                    >
+                      {submittingReturn ? 'Scheduling...' : 'Schedule Doorstep Pickup'}
                     </button>
                   </div>
                 </form>
