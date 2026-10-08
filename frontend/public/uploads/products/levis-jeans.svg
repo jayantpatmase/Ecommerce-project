@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="60%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </radialGradient>
+    <radialGradient id="spotlight" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="podiumGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#334155" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#000000" flood-opacity="0.65" />
+    </filter>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Studio Stage Background -->
+  <rect width="600" height="600" fill="url(#bgGlow)" rx="28" />
+  <circle cx="300" cy="270" r="230" fill="url(#spotlight)" />
+
+  <!-- Podium / Grounding Surface -->
+  <ellipse cx="300" cy="425" rx="200" ry="24" fill="#000000" opacity="0.5" filter="url(#dropShadow)" />
+  <ellipse cx="300" cy="420" rx="160" ry="14" fill="url(#podiumGrad)" opacity="0.6" />
+
+  <!-- Top Badge -->
+  <g transform="translate(300, 48)">
+    <rect x="-90" y="-14" width="180" height="28" rx="14" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5" />
+    <circle cx="-68" cy="0" r="4" fill="#3b82f6" />
+    <text x="-54" y="5" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#f8fafc" letter-spacing="1.5">AUTHENTIC DENIM</text>
+  </g>
+
+  <!-- Main Product Illustration Artwork -->
+  <g id="productArtwork" filter="url(#dropShadow)">
+
+  <g transform="translate(200, 120)">
+    <!-- Denim Pants Shape -->
+    <defs>
+      <linearGradient id="denimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1e3a8a" />
+        <stop offset="40%" stop-color="#1d4ed8" />
+        <stop offset="100%" stop-color="#172554" />
+      </linearGradient>
+    </defs>
+    <path d="M 20,20 L 180,20 L 190,80 L 175,270 L 115,270 L 100,120 L 85,270 L 25,270 L 10,80 Z" fill="url(#denimGrad)" stroke="#60a5fa" stroke-width="2" />
+    <!-- Waistband & Belt Loops -->
+    <rect x="18" y="20" width="164" height="22" fill="#1e3a8a" stroke="#d97706" stroke-width="1.5" stroke-dasharray="3,2" />
+    <!-- Levi's Leather Patch on Waistband -->
+    <rect x="140" y="23" width="34" height="16" rx="2" fill="#b45309" />
+    <text x="157" y="34" font-family="sans-serif" font-size="6" font-weight="900" fill="#fef3c7" text-anchor="middle">LEVI STRAUSS</text>
+    <!-- Front Pockets & Contrast Stitching -->
+    <path d="M 20,42 Q 60,45 65,85" fill="none" stroke="#d97706" stroke-width="1.8" stroke-dasharray="3,2" />
+    <path d="M 180,42 Q 140,45 135,85" fill="none" stroke="#d97706" stroke-width="1.8" stroke-dasharray="3,2" />
+    <!-- Fly seam -->
+    <line x1="100" y1="42" x2="100" y2="105" stroke="#d97706" stroke-width="2" stroke-dasharray="3,2" />
+    <circle cx="100" cy="32" r="5" fill="#cbd5e1" stroke="#64748b" stroke-width="1" />
+  </g>
+
+  </g>
+
+  <!-- Bottom Details Typography -->
+  <g transform="translate(300, 520)">
+    <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="0.3">Levi's 511 Slim Fit Stretch Jeans</text>
+    <text x="0" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="500" fill="#94a3b8" text-anchor="middle" letter-spacing="0.5">Original Performance Denim • Flex Stretch • Iconic Dark Wash</text>
+  </g>
+</svg>

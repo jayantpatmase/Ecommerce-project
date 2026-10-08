@@ -82,7 +82,7 @@ export default function OrderSuccess() {
     );
   }
 
-  const isPendingOnlinePay = order.payment_method === 'Online Payment' && order.payment_status === 'pending';
+  const isPendingOnlinePay = order.payment_method !== 'Cash on Delivery' && order.payment_status === 'pending';
 
   return (
     <div className="py-5 bg-light flex-grow-1 d-flex align-items-center">

@@ -24,7 +24,20 @@ if (!empty($errors)) {
 }
 
 $shippingAddress = Validator::sanitize($data['shipping_address']);
-$paymentMethod   = Validator::sanitize($data['payment_method']);
+$rawPaymentMethod = Validator::sanitize($data['payment_method']);
+
+// Flexible normalization for Indian Payment Gateways
+if (stripos($rawPaymentMethod, 'UPI') !== false) {
+    $paymentMethod = 'UPI (Google Pay / PhonePe / Paytm / BHIM)';
+} elseif (stripos($rawPaymentMethod, 'Card') !== false || stripos($rawPaymentMethod, 'Debit') !== false || stripos($rawPaymentMethod, 'Credit') !== false) {
+    $paymentMethod = 'Credit/Debit Card (RuPay/Visa/Mastercard)';
+} elseif (stripos($rawPaymentMethod, 'Net Banking') !== false || stripos($rawPaymentMethod, 'Bank') !== false) {
+    $paymentMethod = 'Net Banking';
+} elseif (stripos($rawPaymentMethod, 'Cash') !== false || stripos($rawPaymentMethod, 'COD') !== false || stripos($rawPaymentMethod, 'Doorstep') !== false) {
+    $paymentMethod = 'Cash on Delivery';
+} else {
+    $paymentMethod = 'Online Payment';
+}
 
 $allowedMethods = [
     'Cash on Delivery',

@@ -47,13 +47,14 @@ if ($order['order_status'] === 'cancelled') {
 
 $amount = (float)$order['total_amount'];
 $transactionId = 'TXN_' . strtoupper(bin2hex(random_bytes(6))) . '_' . time();
+$methodToStore = !empty($order['payment_method']) ? $order['payment_method'] : 'Online Payment';
 
 // Record pending payment intent
 $payStmt = $db->prepare("
     INSERT INTO payments (order_id, payment_method, transaction_id, amount, status, gateway_response, created_at)
-    VALUES (?, 'Online Payment', ?, ?, 'pending', '{\"intent_created\":true}', NOW())
+    VALUES (?, ?, ?, ?, 'pending', '{\"intent_created\":true}', NOW())
 ");
-$payStmt->execute([(int)$orderId, $transactionId, $amount]);
+$payStmt->execute([(int)$orderId, $methodToStore, $transactionId, $amount]);
 $paymentId = (int)$db->lastInsertId();
 
 Response::success([
@@ -61,6 +62,6 @@ Response::success([
     'order_id'       => (int)$orderId,
     'transaction_id' => $transactionId,
     'amount'         => $amount,
-    'currency'       => 'USD',
+    'currency'       => 'INR',
     'status'         => 'pending'
 ], 'Payment session initiated.');

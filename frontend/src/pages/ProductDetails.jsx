@@ -101,7 +101,38 @@ export default function ProductDetails() {
     const name = (product.name || '').toLowerCase();
     const cat = (product.category_name || '').toLowerCase();
 
-    // 1. Smartwatches & Wearables (Smart Fitness Watch Series 9)
+    // 1. Smartphones & Mobile Devices (Samsung Galaxy S24 Ultra, iPhone 15 Pro, OnePlus 12)
+    if (name.includes('galaxy') || name.includes('iphone') || name.includes('oneplus') || name.includes('s24') || name.includes('phone')) {
+      const isUltraOrFlagship = name.includes('ultra') || name.includes('pro') || name.includes('oneplus');
+      return {
+        label: 'Storage Capacity:',
+        isStorage: true,
+        options: isUltraOrFlagship ? [
+          { name: '256 GB', priceOffset: 0, badge: 'Standard' },
+          { name: '512 GB', priceOffset: 12000, badge: 'Most Popular' },
+          { name: '1 TB', priceOffset: 25000, badge: 'Max Storage' }
+        ] : [
+          { name: '128 GB', priceOffset: 0, badge: 'Standard' },
+          { name: '256 GB', priceOffset: 8000, badge: 'Popular' },
+          { name: '512 GB', priceOffset: 18000, badge: 'High Capacity' }
+        ]
+      };
+    }
+
+    // 2. Tablets (iPad Air M2)
+    if (name.includes('ipad') || name.includes('tablet')) {
+      return {
+        label: 'Storage & Connectivity:',
+        isStorage: true,
+        options: [
+          { name: '128 GB (Wi-Fi)', priceOffset: 0, badge: 'Standard' },
+          { name: '256 GB (Wi-Fi)', priceOffset: 10000, badge: 'Popular' },
+          { name: '512 GB (Wi-Fi + Cellular)', priceOffset: 25000, badge: '5G Cellular' }
+        ]
+      };
+    }
+
+    // 3. Smartwatches & Wearables (Smart Fitness Watch Series 9)
     if (name.includes('watch') || name.includes('fitness')) {
       return {
         label: 'Storage & Connectivity Edition:',
@@ -115,27 +146,61 @@ export default function ProductDetails() {
       };
     }
 
-    // 2. Laptops & Computers
-    if (name.includes('laptop') || name.includes('ultrabook')) {
+    // 4. Laptops & Computers (MacBook Air M3, UltraBook Pro)
+    if (name.includes('laptop') || name.includes('ultrabook') || name.includes('macbook')) {
       return {
         label: 'Configuration (RAM & NVMe SSD):',
         isStorage: true,
         options: [
-          { name: '16GB / 512GB SSD', priceOffset: -5000, badge: 'Value' },
-          { name: '16GB / 1TB NVMe', priceOffset: 0, badge: 'Recommended' },
-          { name: '32GB / 2TB NVMe', priceOffset: 12000, badge: 'Max Power' }
+          { name: '16GB / 512GB SSD', priceOffset: 0, badge: 'Standard' },
+          { name: '16GB / 1TB NVMe', priceOffset: 15000, badge: 'Recommended' },
+          { name: '24GB / 1TB SSD', priceOffset: 30000, badge: 'Max Power' }
         ]
       };
     }
 
-    // 3. Audio & Headphones
-    if (name.includes('headphone') || name.includes('audio') || cat.includes('audio')) {
+    // 5. Smart TVs (Sony Bravia 55")
+    if (name.includes('tv') || name.includes('bravia')) {
+      return {
+        label: 'Screen Size & Sound Bundle:',
+        options: [
+          { name: '55" 4K Google TV Only', priceOffset: 0, badge: 'Base' },
+          { name: '55" + Sony Soundbar Bundle', priceOffset: 12990, badge: '+Soundbar' },
+          { name: '65" 4K Large Screen Cinema', priceOffset: 24990, badge: '65" Cinema' }
+        ]
+      };
+    }
+
+    // 6. Audio & Headphones (WH-1000XM5, boAt Airdopes)
+    if (name.includes('headphone') || name.includes('audio') || name.includes('airdopes') || name.includes('earbud')) {
       return {
         label: 'Edition & Package:',
         options: [
-          { name: 'Standard Wireless', priceOffset: 0, badge: 'Base' },
-          { name: 'Pro Edition + Hard Case', priceOffset: 450, badge: '+₹450' },
-          { name: 'Audiophile Bundle (DAC + Cable)', priceOffset: 950, badge: '+₹950' }
+          { name: 'Standard Edition', priceOffset: 0, badge: 'Base' },
+          { name: 'Pro Edition + Armor Case', priceOffset: 350, badge: '+Case' },
+          { name: 'Audiophile Travel Kit', priceOffset: 850, badge: '+Accessories' }
+        ]
+      };
+    }
+
+    // 7. Small Appliances (Philips Airfryer, Dyson Vacuum)
+    if (name.includes('air fryer') || name.includes('airfryer')) {
+      return {
+        label: 'Capacity & Accessory Kit:',
+        options: [
+          { name: '4.1L Standard (2-3 Persons)', priceOffset: 0, badge: 'Standard' },
+          { name: '4.1L + Grill Rack & Baking Pan', priceOffset: 999, badge: 'Combo' },
+          { name: '6.2L XL Family Capacity', priceOffset: 2499, badge: 'XL Family' }
+        ]
+      };
+    }
+    if (name.includes('vacuum') || name.includes('dyson')) {
+      return {
+        label: 'Attachment Kit & Battery:',
+        options: [
+          { name: 'Standard Fluffy + Crevice Tool', priceOffset: 0, badge: 'Standard' },
+          { name: 'Complete Home & Car Kit', priceOffset: 2999, badge: 'Detailing' },
+          { name: 'Dual Battery Fade-Free Kit', priceOffset: 5999, badge: 'Pro' }
         ]
       };
     }

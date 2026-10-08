@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="60%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </radialGradient>
+    <radialGradient id="spotlight" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="podiumGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#334155" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#000000" flood-opacity="0.65" />
+    </filter>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Studio Stage Background -->
+  <rect width="600" height="600" fill="url(#bgGlow)" rx="28" />
+  <circle cx="300" cy="270" r="230" fill="url(#spotlight)" />
+
+  <!-- Podium / Grounding Surface -->
+  <ellipse cx="300" cy="425" rx="200" ry="24" fill="#000000" opacity="0.5" filter="url(#dropShadow)" />
+  <ellipse cx="300" cy="420" rx="160" ry="14" fill="url(#podiumGrad)" opacity="0.6" />
+
+  <!-- Top Badge -->
+  <g transform="translate(300, 48)">
+    <rect x="-90" y="-14" width="180" height="28" rx="14" fill="#1e293b" stroke="#a855f7" stroke-width="1.5" />
+    <circle cx="-68" cy="0" r="4" fill="#a855f7" />
+    <text x="-54" y="5" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#f8fafc" letter-spacing="1.5">APPLE ORIGINAL</text>
+  </g>
+
+  <!-- Main Product Illustration Artwork -->
+  <g id="productArtwork" filter="url(#dropShadow)">
+
+  <g transform="translate(215, 115)">
+    <!-- Natural Titanium Body -->
+    <rect x="0" y="0" width="170" height="310" rx="36" fill="#64748b" stroke="#cbd5e1" stroke-width="2.5" />
+    <!-- OLED Bezel -->
+    <rect x="5" y="5" width="160" height="300" rx="32" fill="#090d16" />
+    <!-- iOS 17 Gradient Wallpaper -->
+    <defs>
+      <linearGradient id="iosWall" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1e1b4b" />
+        <stop offset="30%" stop-color="#312e81" />
+        <stop offset="70%" stop-color="#4f46e5" />
+        <stop offset="100%" stop-color="#a855f7" />
+      </linearGradient>
+    </defs>
+    <rect x="7" y="7" width="156" height="296" rx="30" fill="url(#iosWall)" />
+    <!-- Dynamic Island Pill -->
+    <rect x="55" y="16" width="50" height="15" rx="7.5" fill="#000000" />
+    <circle cx="95" cy="23.5" r="3" fill="#0f172a" stroke="#1e293b" stroke-width="0.8" />
+    <!-- Clock & Lock Screen Widgets -->
+    <text x="80" y="85" font-family="-apple-system, sans-serif" font-size="34" font-weight="700" fill="#ffffff" text-anchor="middle">9:41</text>
+    <text x="80" y="105" font-family="-apple-system, sans-serif" font-size="11" font-weight="500" fill="#e2e8f0" text-anchor="middle">Tuesday, September 12</text>
+    <!-- Lock screen circular widgets -->
+    <g transform="translate(48, 122)">
+      <circle cx="16" cy="16" r="14" fill="#ffffff" fill-opacity="0.15" />
+      <text x="16" y="20" font-family="sans-serif" font-size="10" fill="#ffffff" text-anchor="middle">85%</text>
+      <circle cx="48" cy="16" r="14" fill="#ffffff" fill-opacity="0.15" />
+      <path d="M48,10 A6,6 0 0,1 48,22" stroke="#38bdf8" stroke-width="2" fill="none" />
+    </g>
+    <!-- Flashlight & Camera shortcut circles -->
+    <circle cx="30" cy="275" r="14" fill="#ffffff" fill-opacity="0.2" />
+    <circle cx="130" cy="275" r="14" fill="#ffffff" fill-opacity="0.2" />
+    <rect x="60" y="293" width="40" height="3" rx="1.5" fill="#ffffff" opacity="0.8" />
+  </g>
+
+  </g>
+
+  <!-- Bottom Details Typography -->
+  <g transform="translate(300, 520)">
+    <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="0.3">Apple iPhone 15 Pro</text>
+    <text x="0" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="500" fill="#94a3b8" text-anchor="middle" letter-spacing="0.5">A17 Pro 3nm • Pro Camera 48MP • Natural Titanium</text>
+  </g>
+</svg>
