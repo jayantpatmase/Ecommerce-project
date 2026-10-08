@@ -53,30 +53,7 @@ export default function Home() {
 
   return (
     <div className="container py-3">
-      {/* 1. Samsung One UI Glance & Weather Widget */}
-      <section className="mb-3">
-        <div className="card border-0 rounded-4 p-3 bg-white shadow-sm">
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <div className="text-muted small fw-semibold" style={{ fontSize: '0.78rem' }}>
-                <i className="bi bi-geo-alt-fill text-danger me-1"></i> Pan-India Express
-              </div>
-              <h5 className="fw-extrabold text-dark mb-0" style={{ letterSpacing: '-0.02em' }}>
-                Galaxy Store India
-              </h5>
-            </div>
-            <div className="text-end">
-              <span className="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-bold small">
-                One UI 6.1
-              </span>
-              <div className="text-muted small mt-1" style={{ fontSize: '0.72rem' }}>
-                <i className="bi bi-sun-fill text-warning me-1"></i> 28°C • Mumbai
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
+      {/* Categories & Catalog */}
       <div>
         {/* 2. Samsung Galaxy Store App Icons (Squircle Category Grid) */}
         <section className="card border-0 rounded-4 p-3 bg-white shadow-sm mb-4">
